@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-func TestDateSuite(t *testing.T) {
+func TestEnvironmentSuite(t *testing.T) {
 	suite.Run(t, new(EnvironmentSuite))
 }
 
