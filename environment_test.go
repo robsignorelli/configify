@@ -26,6 +26,7 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("TEST_STRING_SPACE", "  foo bar ")
 	suite.set("TEST_STRING_SLICE", "foo, bar, baz ,5 ")
 	suite.set("TEST_INT", "5")
+	suite.set("TEST_UINT", "90")
 	suite.set("TEST_LARGE_INT", "5,300,123")
 	suite.set("TEST_NEGATIVE", "-3")
 	suite.set("TEST_FLOAT", "5.430")
@@ -38,11 +39,21 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("FOO_STRING", "foo")
 	suite.set("FOO_INT", "5")
 
-	suite.source = configify.EnvironmentSource("TEST")
+	suite.source, _ = configify.Environment(configify.Options{
+		Namespace: "TEST",
+	})
 }
 
 func (suite EnvironmentSuite) set(key string, value string) {
 	_ = os.Setenv(key, value)
+}
+
+func (suite EnvironmentSuite) TestFactory() {
+	_, err := configify.Environment(configify.Options{Namespace: ""})
+	suite.NoError(err)
+
+	_, err = configify.Environment(configify.Options{Namespace: "FOO"})
+	suite.NoError(err)
 }
 
 func (suite EnvironmentSuite) TestGetString() {
@@ -133,4 +144,34 @@ func (suite EnvironmentSuite) TestGetUint() {
 	suite.Equal(uint(0), get("FOO_EMPTY"))
 	suite.Equal(uint(0), get("FOO_STRING"))
 	suite.Equal(uint(0), get("FOO_INT"))
+}
+
+func (suite EnvironmentSuite) TestDefaults() {
+	def := NewMockSource(func(s *MockSource) {
+		s.On("GetString", "STRING_MOCK").Return("asdf")
+		s.On("GetStringSlice", "STRING_SLICE_MOCK").Return([]string{"a", "b"})
+		s.On("GetInt", "INT_MOCK").Return(8)
+		s.On("GetUint", "UINT_MOCK").Return(uint(9))
+	})
+
+	env, err := configify.Environment(configify.Options{Namespace: "TEST", Defaults: def})
+	suite.Require().NoError(err)
+
+	// For each, make sure that (A) a valid env value resolves, (B) a value in the fixed fallback
+	// resolves, and (C) a value that doesn't exist in either uses the hard-coded defaults.
+	suite.Equal("foo", env.GetString("STRING"))
+	suite.Equal("asdf", env.GetString("STRING_MOCK"))
+	suite.Equal("", env.GetString("STRING_XXX"))
+
+	suite.ElementsMatch([]string{"foo", "bar", "baz", "5"}, env.GetStringSlice("STRING_SLICE"))
+	suite.ElementsMatch([]string{"a", "b"}, env.GetStringSlice("STRING_SLICE_MOCK"))
+	suite.ElementsMatch([]string{}, env.GetStringSlice("STRING_SLICE_XXX"))
+
+	suite.Equal(5, env.GetInt("INT"))
+	suite.Equal(8, env.GetInt("INT_MOCK"))
+	suite.Equal(0, env.GetInt("INT_XXX"))
+
+	suite.Equal(uint(90), env.GetUint("UINT"))
+	suite.Equal(uint(9), env.GetUint("UINT_MOCK"))
+	suite.Equal(uint(0), env.GetUint("UINT_XXX"))
 }

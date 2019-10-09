@@ -17,7 +17,7 @@ type FixedSuite struct {
 }
 
 func (suite *FixedSuite) SetupSuite() {
-	suite.source = configify.FixedSource("TEST", map[string]interface{}{
+	suite.source = configify.Fixed(configify.Options{Namespace: "TEST"}, map[string]interface{}{
 		"EMPTY":              "",
 		"STRING":             "foo",
 		"STRING_SPACE":       "  foo bar ",
