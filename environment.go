@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-func Environment(options Options) (SourceBinder, error) {
+func Environment(options Options) (Source, error) {
 	if options.Defaults == nil {
-		options.Defaults = defaults{}
+		options.Defaults = Defaults{}
 	}
 	return &environmentSource{options: options}, nil
 }
@@ -17,49 +17,60 @@ type environmentSource struct {
 	options Options
 }
 
-func (e environmentSource) lookup(key string) string {
-	return strings.TrimSpace(os.Getenv(e.options.ResolveKey(key)))
+func (e environmentSource) Options() Options {
+	return e.options
 }
 
-func (e environmentSource) GetString(key string) string {
-	if value := e.lookup(key); value != "" {
-		return value
+func (e environmentSource) lookup(key string) (string, bool) {
+	if value, ok := os.LookupEnv(e.options.QualifyKey(key)); ok {
+		return strings.TrimSpace(value), true
 	}
-	return e.options.Defaults.GetString(key)
+	return "", false
 }
 
-func (e environmentSource) GetStringSlice(key string) []string {
-	value := e.lookup(key)
+func (e environmentSource) String(key string) (string, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.String(key)
+	}
+	return value, true
+}
+
+func (e environmentSource) StringSlice(key string) ([]string, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.StringSlice(key)
+	}
 	if value == "" {
-		return e.options.Defaults.GetStringSlice(key)
+		return []string{}, true
 	}
 	slice := strings.Split(value, ",")
 	for i := range slice {
 		slice[i] = strings.TrimSpace(slice[i])
 	}
-	return slice
+	return slice, true
 }
 
-func (e environmentSource) GetInt(key string) int {
-	value := e.lookup(key)
-	if value == "" {
-		return e.options.Defaults.GetInt(key)
+func (e environmentSource) Int(key string) (int, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Int(key)
 	}
 	number, err := strconv.ParseInt(normalizeInteger(value, ',', '.'), 10, 64)
 	if err != nil {
-		return e.options.Defaults.GetInt(key)
+		return 0, false
 	}
-	return int(number)
+	return int(number), true
 }
 
-func (e environmentSource) GetUint(key string) uint {
-	value := e.lookup(key)
-	if value == "" {
-		return e.options.Defaults.GetUint(key)
+func (e environmentSource) Uint(key string) (uint, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Uint(key)
 	}
 	number, err := strconv.ParseUint(normalizeInteger(value, ',', '.'), 10, 64)
 	if err != nil {
-		return e.options.Defaults.GetUint(key)
+		return uint(0), false
 	}
-	return uint(number)
+	return uint(number), true
 }

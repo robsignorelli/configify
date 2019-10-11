@@ -1,22 +1,44 @@
 package configify
 
-// defaults lets us "dog food" our own Source representation so that when some "real" source
+var emptyStringSlice = make([]string, 0)
+
+// Defaults lets us "dog food" our own Source representation so that when some "real" source
 // fails to resolve a value, you can always fall back to this source which is nothing but hard-coded
 // values such as "all ints default to 0" and "all strings default to empty".
-type defaults struct{}
+type Defaults struct{}
 
-func (defaults) GetString(key string) string {
+func (Defaults) Options() Options {
+	return Options{}
+}
+
+func (Defaults) String(string) (string, bool) {
+	return "", false
+}
+
+func (Defaults) StringSlice(string) ([]string, bool) {
+	return emptyStringSlice, false
+}
+
+func (Defaults) Int(string) (int, bool) {
+	return 0, false
+}
+
+func (Defaults) Uint(string) (uint, bool) {
+	return uint(0), false
+}
+
+func (Defaults) GetString(string) string {
 	return ""
 }
 
-func (defaults) GetStringSlice(key string) []string {
+func (Defaults) GetStringSlice(string) []string {
 	return emptyStringSlice
 }
 
-func (defaults) GetInt(key string) int {
+func (Defaults) GetInt(string) int {
 	return 0
 }
 
-func (defaults) GetUint(key string) uint {
+func (Defaults) GetUint(string) uint {
 	return uint(0)
 }

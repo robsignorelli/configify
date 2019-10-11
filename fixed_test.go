@@ -12,12 +12,11 @@ func TestFixedSuite(t *testing.T) {
 }
 
 type FixedSuite struct {
-	suite.Suite
-	source configify.Source
+	SourceSuite
 }
 
 func (suite *FixedSuite) SetupSuite() {
-	suite.source = configify.Fixed(configify.Options{Namespace: "TEST"}, map[string]interface{}{
+	suite.source = configify.Fixed(configify.Options{Namespace: "TEST"}, configify.Values{
 		"EMPTY":              "",
 		"STRING":             "foo",
 		"STRING_SPACE":       "  foo bar ",
@@ -43,78 +42,55 @@ func (suite *FixedSuite) SetupSuite() {
 }
 
 func (suite FixedSuite) TestGetString() {
-	get := func(key string) string {
-		return suite.source.GetString(key)
-	}
-	suite.Equal("", get("NOT_FOUND"))
-	suite.Equal("", get("EMPTY"))
-	suite.Equal("foo", get("STRING"))
-	suite.Equal("foo bar", get("STRING_SPACE"))
+	suite.ExpectString("NOT_FOUND", "", false)
+	suite.ExpectString("EMPTY", "", true)
+	suite.ExpectString("STRING", "foo", true)
+	suite.ExpectString("STRING_SPACE", "foo bar", true)
 
 	// Only values strongly typed as strings will resolve properly.
-	suite.Equal("", get("STRING_SLICE"))
-	suite.Equal("", get("INT"))
-	suite.Equal("", get("UINT"))
-	suite.Equal("", get("NEGATIVE"))
-	suite.Equal("", get("FLOAT"))
-	suite.Equal("", get("NEGATIVE_FLOAT"))
+	suite.ExpectString("STRING_SLICE", "", false)
+	suite.ExpectString("INT", "", false)
+	suite.ExpectString("FLOAT", "", false)
 }
 
 func (suite FixedSuite) TestGetStringSlice() {
-	get := func(key string) []string {
-		return suite.source.GetStringSlice(key)
-	}
+	suite.ExpectStringSlice("NOT_FOUND", []string{}, false)
+	suite.ExpectStringSlice("STRING_SLICE", []string{"foo", "bar", "baz", "5"}, true)
+	suite.ExpectStringSlice("STRING_SLICE_EMPTY", []string{}, true)
 
-	suite.ElementsMatch([]string{"foo", "bar", "baz", "5"}, get("STRING_SLICE"))
-	suite.ElementsMatch([]string{}, get("STRING_SLICE_EMPTY"))
-	suite.ElementsMatch([]string{}, get("STRING_SLICE_NIL"))
+	// We can't distinguish between nil you explicitly put in and nil that never existed.
+	suite.ExpectStringSlice("STRING_SLICE_NIL", []string{}, false)
 
 	// Only values strongly typed as []string will resolve properly.
-	suite.Len(get("NOT_FOUND"), 0)
-	suite.Len(get("EMPTY"), 0)
-	suite.Len(get("STRING"), 0)
-	suite.Len(get("STRING_SPACE"), 0)
-	suite.Len(get("INT"), 0)
-	suite.Len(get("UINT"), 0)
-	suite.Len(get("FLOAT"), 0)
+	suite.ExpectStringSlice("EMPTY", []string{}, false)
+	suite.ExpectStringSlice("STRING", []string{}, false)
+	suite.ExpectStringSlice("INT", []string{}, false)
+	suite.ExpectStringSlice("FLOAT", []string{}, false)
 }
 
 func (suite FixedSuite) TestGetInt() {
-	get := func(key string) int {
-		return suite.source.GetInt(key)
-	}
-
-	suite.Equal(5, get("INT"))
-	suite.Equal(5300123, get("LARGE_INT"))
-	suite.Equal(-3, get("NEGATIVE"))
+	suite.ExpectInt("NOT_FOUND", 0, false)
+	suite.ExpectInt("INT", 5, true)
+	suite.ExpectInt("LARGE_INT", 5300123, true)
+	suite.ExpectInt("NEGATIVE", -3, true)
 
 	// Only values strongly typed as strings will resolve properly.
-	suite.Equal(0, get("NOT_FOUND"))
-	suite.Equal(0, get("EMPTY"))
-	suite.Equal(0, get("STRING"))
-	suite.Equal(0, get("STRING_SPACE"))
-	suite.Equal(0, get("STRING_SLICE"))
-	suite.Equal(0, get("UINT"))
-	suite.Equal(0, get("FLOAT"))
-	suite.Equal(0, get("NEGATIVE_FLOAT"))
+	suite.ExpectInt("EMPTY", 0, false)
+	suite.ExpectInt("STRING", 0, false)
+	suite.ExpectInt("STRING_SLICE", 0, false)
+	suite.ExpectInt("UINT", 0, false)
 }
 
 func (suite FixedSuite) TestGetUint() {
-	get := func(key string) uint {
-		return suite.source.GetUint(key)
-	}
-
-	suite.Equal(uint(5), get("UINT"))
+	suite.ExpectUint("NOT_FOUND", uint(0), false)
+	suite.ExpectUint("UINT", uint(5), true)
 
 	// Only values strongly typed as strings will resolve properly.
-	suite.Equal(uint(0), get("NOT_FOUND"))
-	suite.Equal(uint(0), get("EMPTY"))
-	suite.Equal(uint(0), get("STRING"))
-	suite.Equal(uint(0), get("STRING_SPACE"))
-	suite.Equal(uint(0), get("STRING_SLICE"))
-	suite.Equal(uint(0), get("FLOAT"))
-	suite.Equal(uint(0), get("NEGATIVE_FLOAT"))
-	suite.Equal(uint(0), get("INT"))
-	suite.Equal(uint(0), get("LARGE_INT"))
-	suite.Equal(uint(0), get("NEGATIVE"))
+	suite.ExpectUint("EMPTY", uint(0), false)
+	suite.ExpectUint("STRING", uint(0), false)
+	suite.ExpectUint("STRING_SLICE", uint(0), false)
+	suite.ExpectUint("INT", uint(0), false)
+	suite.ExpectUint("LARGE_INT", uint(0), false)
+	suite.ExpectUint("NEGATIVE", uint(0), false)
+	suite.ExpectUint("FLOAT", uint(0), false)
 }
