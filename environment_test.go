@@ -55,6 +55,15 @@ func (suite EnvironmentSuite) TestFactory() {
 	suite.NoError(err)
 }
 
+func (suite EnvironmentSuite) TestOptions() {
+	source, _ := configify.Environment(configify.Options{
+		Namespace:      "FOO",
+		NamespaceDelim: ".",
+	})
+	suite.Equal("FOO", source.Options().Namespace)
+	suite.Equal(".", source.Options().NamespaceDelim)
+}
+
 func (suite EnvironmentSuite) TestGetString() {
 	suite.ExpectString("NOT_FOUND", "", false)
 	suite.ExpectString("EMPTY", "", true)

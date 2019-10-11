@@ -26,19 +26,3 @@ func (Defaults) Int(string) (int, bool) {
 func (Defaults) Uint(string) (uint, bool) {
 	return uint(0), false
 }
-
-func (Defaults) GetString(string) string {
-	return ""
-}
-
-func (Defaults) GetStringSlice(string) []string {
-	return emptyStringSlice
-}
-
-func (Defaults) GetInt(string) int {
-	return 0
-}
-
-func (Defaults) GetUint(string) uint {
-	return uint(0)
-}
