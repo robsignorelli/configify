@@ -2,6 +2,7 @@ package configify_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/robsignorelli/configify"
 	"github.com/stretchr/testify/suite"
@@ -33,4 +34,10 @@ func (suite DefaultSuite) TestAll() {
 
 	suite.ExpectUint("", uint(0), false)
 	suite.ExpectUint("anything", uint(0), false)
+
+	suite.ExpectDuration("", time.Duration(0), false)
+	suite.ExpectDuration("anything", time.Duration(0), false)
+
+	suite.ExpectTime("", time.Time{}, false)
+	suite.ExpectTime("anything", time.Time{}, false)
 }

@@ -1,5 +1,10 @@
 package configify
 
+import (
+	"errors"
+	"time"
+)
+
 var emptyStringSlice = make([]string, 0)
 
 // Defaults lets us "dog food" our own Source representation so that when some "real" source
@@ -25,4 +30,23 @@ func (Defaults) Int(string) (int, bool) {
 
 func (Defaults) Uint(string) (uint, bool) {
 	return uint(0), false
+}
+
+func (Defaults) Duration(string) (time.Duration, bool) {
+	return time.Duration(0), false
+}
+
+func (Defaults) Time(string) (time.Time, bool) {
+	return time.Time{}, false
+}
+
+func parseTime(input string) (time.Time, error) {
+	switch len(input) {
+	case 0:
+		return time.Time{}, errors.New("invalid time: empty")
+	case 10:
+		return time.Parse("2006-01-02", input)
+	default:
+		return time.Parse(time.RFC3339, input)
+	}
 }

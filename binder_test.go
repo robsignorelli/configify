@@ -3,6 +3,7 @@ package configify_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/robsignorelli/configify"
 	"github.com/stretchr/testify/suite"
@@ -39,6 +40,12 @@ type TestStruct struct {
 	UintRenamed uint `conf:"some_uint"`
 	UintPointer *uint
 
+	Duration        time.Duration
+	DurationPointer *time.Duration
+
+	Time        time.Time
+	TimePointer *time.Time
+
 	Nested           Nested
 	NestedRenamed    Nested `conf:"DUDE"`
 	NestedPointer    *Nested
@@ -65,6 +72,8 @@ func (suite BinderSuite) populateTestStruct() TestStruct {
 	nestedStringVal := "NestedInnerC"
 	nestedRenamedStringVal := "NestedRenamedInnerC"
 	nestedPointerStringVal := "NestedPointerInnerC"
+	durationPointerVal := 10 * time.Minute
+	timePointerVal := time.Date(2019, 12, 25, 11, 59, 59, 0, time.UTC)
 
 	value := TestStruct{
 		String:        "A",
@@ -88,6 +97,12 @@ func (suite BinderSuite) populateTestStruct() TestStruct {
 		StringSlice:        []string{"Foo1", "Bar1"},
 		StringSlice2:       []string{"Foo2", "Bar2"},
 		StringSliceRenamed: []string{"Foo3", "Bar3"},
+
+		Duration:        5 * time.Minute,
+		DurationPointer: &durationPointerVal,
+
+		Time:        time.Date(2019, 9, 1, 12, 0, 0, 0, time.UTC),
+		TimePointer: &timePointerVal,
 
 		Nested: Nested{
 			InnerString:        "NestedInnerA",
@@ -164,6 +179,12 @@ func (suite BinderSuite) TestModelBinder_NoDefaults() {
 	suite.Nil(input.StringSlice2)
 	suite.Nil(input.StringSliceRenamed)
 
+	suite.Equal(time.Duration(0), input.Duration)
+	suite.Nil(input.DurationPointer)
+
+	suite.Equal(time.Time{}, input.Time)
+	suite.Nil(input.TimePointer)
+
 	suite.Equal("", input.Nested.InnerString)
 	suite.Equal(0, input.Nested.InnerInt)
 	suite.Nil(input.NestedPointer)
@@ -199,6 +220,12 @@ func (suite BinderSuite) TestModelBinder_KeepDefaults() {
 	suite.ElementsMatch([]string{"Foo1", "Bar1"}, input.StringSlice)
 	suite.ElementsMatch([]string{"Foo2", "Bar2"}, input.StringSlice2)
 	suite.ElementsMatch([]string{"Foo3", "Bar3"}, input.StringSliceRenamed)
+
+	suite.Equal(5*time.Minute, input.Duration)
+	suite.Equal(10*time.Minute, *input.DurationPointer)
+
+	suite.Equal(time.Date(2019, 9, 1, 12, 0, 0, 0, time.UTC), input.Time)
+	suite.Equal(time.Date(2019, 12, 25, 11, 59, 59, 0, time.UTC), *input.TimePointer)
 
 	suite.Equal("AnonymousA", input.Anonymous.InnerString)
 	suite.Equal("AnonymousB", input.Anonymous.InnerStringRenamed)
@@ -254,6 +281,12 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 		source.On("Uint", "some_uint").Return(uint(114), true)
 		source.On("Uint", "UINT_POINTER").Return(uint(115), true)
 
+		source.On("Duration", "DURATION").Return(1*time.Hour, true)
+		source.On("Duration", "DURATION_POINTER").Return(2*time.Hour, true)
+
+		source.On("Time", "TIME").Return(time.Date(2000, 1, 1, 3, 4, 5, 6, time.UTC), true)
+		source.On("Time", "TIME_POINTER").Return(time.Date(2100, 2, 3, 4, 5, 6, 7, time.UTC), true)
+
 		source.On("String", "ANONYMOUS_INNER_STRING").Return("New-AnonymousA", true)
 		source.On("String", "ANONYMOUS_inside_string").Return("New-AnonymousB", true)
 		source.On("String", "ANONYMOUS_INNER_STRING_RENAMED").Return("SHOULD BE RENAMED!", true)
@@ -307,6 +340,12 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 	suite.ElementsMatch([]string{"New-Foo1", "New-Bar1"}, input.StringSlice)
 	suite.ElementsMatch([]string{"New-Foo2", "New-Bar2"}, input.StringSlice2)
 	suite.ElementsMatch([]string{"New-Foo3", "New-Bar3"}, input.StringSliceRenamed)
+
+	suite.Equal(1*time.Hour, input.Duration)
+	suite.Equal(2*time.Hour, *input.DurationPointer)
+
+	suite.Equal(time.Date(2000, 1, 1, 3, 4, 5, 6, time.UTC), input.Time)
+	suite.Equal(time.Date(2100, 2, 3, 4, 5, 6, 7, time.UTC), *input.TimePointer)
 
 	suite.Equal("New-AnonymousA", input.Anonymous.InnerString)
 	suite.Equal("New-AnonymousB", input.Anonymous.InnerStringRenamed)

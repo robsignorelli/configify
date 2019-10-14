@@ -2,6 +2,7 @@ package configify
 
 import (
 	"strings"
+	"time"
 )
 
 // Source represents a... well... source of configuration values. This can be a file,
@@ -14,6 +15,8 @@ type Source interface {
 	StringSlice(key string) ([]string, bool)
 	Int(key string) (int, bool)
 	Uint(key string) (uint, bool)
+	Duration(key string) (time.Duration, bool)
+	Time(key string) (time.Time, bool)
 }
 
 // Options encapsulate the standard attributes that are shared by all sources in configify.

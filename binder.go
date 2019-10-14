@@ -4,7 +4,11 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"time"
 )
+
+var typeDuration = reflect.TypeOf(time.Duration(0))
+var typeTime = reflect.TypeOf(time.Time{})
 
 // Binder defines a component that can overlay config/source values onto an existing struct of yours.
 // This lets you have strongly-typed config struct instances in your code that you can pass around
@@ -44,11 +48,26 @@ func (b standardBinder) bindPrefixWithType(out interface{}, prefix string, outTy
 		field := outType.Field(i)
 		value := outValue.Field(i)
 		key := b.Source.Options().JoinKey(prefix, b.resolveName(field))
+
 		b.updateValue(field, value, key)
 	}
 }
 
 func (b standardBinder) updateValue(field reflect.StructField, value reflect.Value, key string) {
+	// There are a couple of common types we support that aren't built-ins, so check those first
+	switch field.Type {
+	case typeDuration:
+		if v, ok := b.Source.Duration(key); ok {
+			value.Set(reflect.ValueOf(v))
+		}
+		return
+	case typeTime:
+		if v, ok := b.Source.Time(key); ok {
+			value.Set(reflect.ValueOf(v))
+		}
+		return
+	}
+
 	switch field.Type.Kind() {
 	case reflect.String:
 		if v, ok := b.Source.String(key); ok {
@@ -72,6 +91,20 @@ func (b standardBinder) updateValue(field reflect.StructField, value reflect.Val
 }
 
 func (b standardBinder) updatePointer(field reflect.StructField, value reflect.Value, key string) {
+	// There are a couple of common types we support that aren't built-ins, so check those first
+	switch field.Type.Elem() {
+	case typeDuration:
+		if v, ok := b.Source.Duration(key); ok {
+			value.Set(reflect.ValueOf(&v))
+		}
+		return
+	case typeTime:
+		if v, ok := b.Source.Time(key); ok {
+			value.Set(reflect.ValueOf(&v))
+		}
+		return
+	}
+
 	switch field.Type.Elem().Kind() {
 	case reflect.String:
 		if v, ok := b.Source.String(key); ok {

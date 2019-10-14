@@ -4,6 +4,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func Environment(options Options) (Source, error) {
@@ -73,4 +74,28 @@ func (e environmentSource) Uint(key string) (uint, bool) {
 		return uint(0), false
 	}
 	return uint(number), true
+}
+
+func (e environmentSource) Duration(key string) (time.Duration, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Duration(key)
+	}
+	duration, err := time.ParseDuration(value)
+	if err != nil {
+		return time.Duration(0), false
+	}
+	return duration, true
+}
+
+func (e environmentSource) Time(key string) (time.Time, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Time(key)
+	}
+	dateTime, err := parseTime(value)
+	if err != nil {
+		return time.Time{}, false
+	}
+	return dateTime, true
 }

@@ -1,6 +1,9 @@
 package configify
 
-import "strings"
+import (
+	"strings"
+	"time"
+)
 
 // Fixed creates a hard-coded map of config values. You can use these as a source on their own
 // or you can provide them as the fallback defaults for other sources.
@@ -57,4 +60,18 @@ func (s fixedSource) Uint(key string) (uint, bool) {
 		return val, true
 	}
 	return s.options.Defaults.Uint(key)
+}
+
+func (s fixedSource) Duration(key string) (time.Duration, bool) {
+	if val, ok := s.values[s.options.QualifyKey(key)].(time.Duration); ok {
+		return val, true
+	}
+	return s.options.Defaults.Duration(key)
+}
+
+func (s fixedSource) Time(key string) (time.Time, bool) {
+	if val, ok := s.values[s.options.QualifyKey(key)].(time.Time); ok {
+		return val, true
+	}
+	return s.options.Defaults.Time(key)
 }

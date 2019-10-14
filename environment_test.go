@@ -3,6 +3,7 @@ package configify_test
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/robsignorelli/configify"
 	"github.com/stretchr/testify/suite"
@@ -26,6 +27,9 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("TEST_STRING_SLICE", "foo, bar, baz ,5 ")
 	suite.set("TEST_INT", "5")
 	suite.set("TEST_UINT", "90")
+	suite.set("TEST_DURATION", "5m3s")
+	suite.set("TEST_TIME_YYYYMMDD", "2019-12-25")
+	suite.set("TEST_TIME_RFC3339", "2019-12-25T12:00:05.0Z")
 	suite.set("TEST_LARGE_INT", "5,300,123")
 	suite.set("TEST_NEGATIVE", "-3")
 	suite.set("TEST_FLOAT", "5.430")
@@ -64,7 +68,7 @@ func (suite EnvironmentSuite) TestOptions() {
 	suite.Equal(".", source.Options().NamespaceDelim)
 }
 
-func (suite EnvironmentSuite) TestGetString() {
+func (suite EnvironmentSuite) TestString() {
 	suite.ExpectString("NOT_FOUND", "", false)
 	suite.ExpectString("EMPTY", "", true)
 	suite.ExpectString("STRING", "foo", true)
@@ -81,7 +85,7 @@ func (suite EnvironmentSuite) TestGetString() {
 	suite.ExpectString("FOO_INT", "", false)
 }
 
-func (suite EnvironmentSuite) TestGetStringSlice() {
+func (suite EnvironmentSuite) TestStringSlice() {
 	suite.ExpectStringSlice("NOT_FOUND", []string{}, false)
 	suite.ExpectStringSlice("EMPTY", []string{}, true)
 	suite.ExpectStringSlice("STRING", []string{"foo"}, true)
@@ -99,7 +103,7 @@ func (suite EnvironmentSuite) TestGetStringSlice() {
 	suite.ExpectStringSlice("FOO_INT", []string{}, false)
 }
 
-func (suite EnvironmentSuite) TestGetInt() {
+func (suite EnvironmentSuite) TestInt() {
 	// Only values that properly parse to integers are "ok"
 	suite.ExpectInt("NOT_FOUND", 0, false)
 	suite.ExpectInt("EMPTY", 0, false)
@@ -120,7 +124,7 @@ func (suite EnvironmentSuite) TestGetInt() {
 	suite.ExpectInt("FOO_INT", 0, false)
 }
 
-func (suite EnvironmentSuite) TestGetUint() {
+func (suite EnvironmentSuite) TestUint() {
 	// Only values that properly parse to integers are "ok"
 	suite.ExpectUint("NOT_FOUND", uint(0), false)
 	suite.ExpectUint("EMPTY", uint(0), false)
@@ -141,6 +145,27 @@ func (suite EnvironmentSuite) TestGetUint() {
 	suite.ExpectUint("FOO_EMPTY", 0, false)
 	suite.ExpectUint("FOO_STRING", 0, false)
 	suite.ExpectUint("FOO_INT", 0, false)
+}
+
+func (suite EnvironmentSuite) TestDuration() {
+	suite.ExpectDuration("NOT_FOUND", time.Duration(0), false)
+	suite.ExpectDuration("DURATION", 5*time.Minute+3*time.Second, true)
+
+	suite.ExpectDuration("EMPTY", time.Duration(0), false)
+	suite.ExpectDuration("STRING", time.Duration(0), false)
+	suite.ExpectDuration("STRING_SLICE", time.Duration(0), false)
+	suite.ExpectDuration("LARGE_INT", time.Duration(0), false)
+}
+
+func (suite EnvironmentSuite) TestTime() {
+	suite.ExpectTime("NOT_FOUND", time.Time{}, false)
+	suite.ExpectTime("TIME_YYYYMMDD", time.Date(2019, 12, 25, 0, 0, 0, 0, time.UTC), true)
+	suite.ExpectTime("TIME_RFC3339", time.Date(2019, 12, 25, 12, 0, 5, 0, time.UTC), true)
+
+	suite.ExpectTime("EMPTY", time.Time{}, false)
+	suite.ExpectTime("STRING", time.Time{}, false)
+	suite.ExpectTime("STRING_SLICE", time.Time{}, false)
+	suite.ExpectTime("LARGE_INT", time.Time{}, false)
 }
 
 func (suite EnvironmentSuite) TestDefaults() {

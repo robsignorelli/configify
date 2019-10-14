@@ -1,6 +1,8 @@
 package configify_test
 
 import (
+	"time"
+
 	"github.com/robsignorelli/configify"
 	"github.com/stretchr/testify/suite"
 )
@@ -34,5 +36,15 @@ func (suite SourceSuite) ExpectInt(key string, expected int, expectedOK bool) bo
 
 func (suite SourceSuite) ExpectUint(key string, expected uint, expectedOK bool) bool {
 	output, ok := suite.source.Uint(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectDuration(key string, expected time.Duration, expectedOK bool) bool {
+	output, ok := suite.source.Duration(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectTime(key string, expected time.Time, expectedOK bool) bool {
+	output, ok := suite.source.Time(key)
 	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
 }

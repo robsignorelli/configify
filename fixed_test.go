@@ -2,6 +2,7 @@ package configify_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/robsignorelli/configify"
 	"github.com/stretchr/testify/suite"
@@ -38,10 +39,12 @@ func (suite *FixedSuite) SetupSuite() {
 		"FLOAT":              5.430,
 		"LARGE_FLOAT":        5300123.430,
 		"NEGATIVE_FLOAT":     -5.1,
+		"DURATION":           5 * time.Minute,
+		"TIME":               time.Date(2019, time.December, 25, 8, 33, 40, 0, time.UTC),
 	})
 }
 
-func (suite FixedSuite) TestGetString() {
+func (suite FixedSuite) TestString() {
 	suite.ExpectString("NOT_FOUND", "", false)
 	suite.ExpectString("EMPTY", "", true)
 	suite.ExpectString("STRING", "foo", true)
@@ -53,7 +56,7 @@ func (suite FixedSuite) TestGetString() {
 	suite.ExpectString("FLOAT", "", false)
 }
 
-func (suite FixedSuite) TestGetStringSlice() {
+func (suite FixedSuite) TestStringSlice() {
 	suite.ExpectStringSlice("NOT_FOUND", []string{}, false)
 	suite.ExpectStringSlice("STRING_SLICE", []string{"foo", "bar", "baz", "5"}, true)
 	suite.ExpectStringSlice("STRING_SLICE_EMPTY", []string{}, true)
@@ -68,7 +71,7 @@ func (suite FixedSuite) TestGetStringSlice() {
 	suite.ExpectStringSlice("FLOAT", []string{}, false)
 }
 
-func (suite FixedSuite) TestGetInt() {
+func (suite FixedSuite) TestInt() {
 	suite.ExpectInt("NOT_FOUND", 0, false)
 	suite.ExpectInt("INT", 5, true)
 	suite.ExpectInt("LARGE_INT", 5300123, true)
@@ -81,7 +84,7 @@ func (suite FixedSuite) TestGetInt() {
 	suite.ExpectInt("UINT", 0, false)
 }
 
-func (suite FixedSuite) TestGetUint() {
+func (suite FixedSuite) TestUint() {
 	suite.ExpectUint("NOT_FOUND", uint(0), false)
 	suite.ExpectUint("UINT", uint(5), true)
 
@@ -93,4 +96,33 @@ func (suite FixedSuite) TestGetUint() {
 	suite.ExpectUint("LARGE_INT", uint(0), false)
 	suite.ExpectUint("NEGATIVE", uint(0), false)
 	suite.ExpectUint("FLOAT", uint(0), false)
+}
+
+func (suite FixedSuite) TestDuration() {
+	suite.ExpectDuration("NOT_FOUND", time.Duration(0), false)
+	suite.ExpectDuration("DURATION", 5*time.Minute, true)
+
+	// Only values strongly typed as strings will resolve properly.
+	suite.ExpectDuration("EMPTY", time.Duration(0), false)
+	suite.ExpectDuration("STRING", time.Duration(0), false)
+	suite.ExpectDuration("STRING_SLICE", time.Duration(0), false)
+	suite.ExpectDuration("INT", time.Duration(0), false)
+	suite.ExpectDuration("LARGE_INT", time.Duration(0), false)
+	suite.ExpectDuration("NEGATIVE", time.Duration(0), false)
+	suite.ExpectDuration("FLOAT", time.Duration(0), false)
+}
+
+func (suite FixedSuite) TestTime() {
+	suite.ExpectTime("NOT_FOUND", time.Time{}, false)
+	suite.ExpectTime("TIME", time.Date(2019, time.December, 25, 8, 33, 40, 0, time.UTC), true)
+
+	// Only values strongly typed as strings will resolve properly.
+	suite.ExpectTime("EMPTY", time.Time{}, false)
+	suite.ExpectTime("STRING", time.Time{}, false)
+	suite.ExpectTime("STRING_SLICE", time.Time{}, false)
+	suite.ExpectTime("INT", time.Time{}, false)
+	suite.ExpectTime("LARGE_INT", time.Time{}, false)
+	suite.ExpectTime("NEGATIVE", time.Time{}, false)
+	suite.ExpectTime("FLOAT", time.Time{}, false)
+	suite.ExpectTime("DURATION", time.Time{}, false)
 }

@@ -1,6 +1,8 @@
 package configify_test
 
 import (
+	"time"
+
 	"github.com/robsignorelli/configify"
 	"github.com/stretchr/testify/mock"
 )
@@ -15,6 +17,8 @@ func NewMockSource(setup func(*MockSource)) configify.Source {
 	s.On("StringSlice", mock.Anything).Return([]string{}, false)
 	s.On("Int", mock.Anything).Return(0, false)
 	s.On("Uint", mock.Anything).Return(uint(0), false)
+	s.On("Duration", mock.Anything).Return(time.Duration(0), false)
+	s.On("Time", mock.Anything).Return(time.Time{}, false)
 	return s
 }
 
@@ -44,4 +48,14 @@ func (s MockSource) Int(key string) (int, bool) {
 func (s MockSource) Uint(key string) (uint, bool) {
 	args := s.Called(key)
 	return args.Get(0).(uint), args.Get(1).(bool)
+}
+
+func (s MockSource) Duration(key string) (time.Duration, bool) {
+	args := s.Called(key)
+	return args.Get(0).(time.Duration), args.Get(1).(bool)
+}
+
+func (s MockSource) Time(key string) (time.Time, bool) {
+	args := s.Called(key)
+	return args.Get(0).(time.Time), args.Get(1).(bool)
 }
