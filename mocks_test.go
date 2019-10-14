@@ -17,6 +17,8 @@ func NewMockSource(setup func(*MockSource)) configify.Source {
 	s.On("StringSlice", mock.Anything).Return([]string{}, false)
 	s.On("Int", mock.Anything).Return(0, false)
 	s.On("Uint", mock.Anything).Return(uint(0), false)
+	s.On("Bool", mock.Anything).Return(false, false)
+	s.On("Float", mock.Anything).Return(float64(0), false)
 	s.On("Duration", mock.Anything).Return(time.Duration(0), false)
 	s.On("Time", mock.Anything).Return(time.Time{}, false)
 	return s
@@ -48,6 +50,16 @@ func (s MockSource) Int(key string) (int, bool) {
 func (s MockSource) Uint(key string) (uint, bool) {
 	args := s.Called(key)
 	return args.Get(0).(uint), args.Get(1).(bool)
+}
+
+func (s MockSource) Float(key string) (float64, bool) {
+	args := s.Called(key)
+	return args.Get(0).(float64), args.Get(1).(bool)
+}
+
+func (s MockSource) Bool(key string) (bool, bool) {
+	args := s.Called(key)
+	return args.Get(0).(bool), args.Get(1).(bool)
 }
 
 func (s MockSource) Duration(key string) (time.Duration, bool) {

@@ -73,6 +73,10 @@ func (b standardBinder) updateValue(field reflect.StructField, value reflect.Val
 		if v, ok := b.Source.String(key); ok {
 			value.SetString(v)
 		}
+	case reflect.Bool:
+		if v, ok := b.Source.Bool(key); ok {
+			value.SetBool(v)
+		}
 	case reflect.Int:
 		if v, ok := b.Source.Int(key); ok {
 			value.SetInt(int64(v))
@@ -80,6 +84,10 @@ func (b standardBinder) updateValue(field reflect.StructField, value reflect.Val
 	case reflect.Uint:
 		if v, ok := b.Source.Uint(key); ok {
 			value.SetUint(uint64(v))
+		}
+	case reflect.Float64:
+		if v, ok := b.Source.Float(key); ok {
+			value.SetFloat(v)
 		}
 	case reflect.Struct:
 		b.bindPrefix(value.Addr().Interface(), key)
@@ -110,12 +118,20 @@ func (b standardBinder) updatePointer(field reflect.StructField, value reflect.V
 		if v, ok := b.Source.String(key); ok {
 			value.Set(reflect.ValueOf(&v))
 		}
+	case reflect.Bool:
+		if v, ok := b.Source.Bool(key); ok {
+			value.Set(reflect.ValueOf(&v))
+		}
 	case reflect.Int:
 		if v, ok := b.Source.Int(key); ok {
 			value.Set(reflect.ValueOf(&v))
 		}
 	case reflect.Uint:
 		if v, ok := b.Source.Uint(key); ok {
+			value.Set(reflect.ValueOf(&v))
+		}
+	case reflect.Float64:
+		if v, ok := b.Source.Float(key); ok {
 			value.Set(reflect.ValueOf(&v))
 		}
 	case reflect.Struct:

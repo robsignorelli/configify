@@ -27,6 +27,9 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("TEST_STRING_SLICE", "foo, bar, baz ,5 ")
 	suite.set("TEST_INT", "5")
 	suite.set("TEST_UINT", "90")
+	suite.set("TEST_BOOL_TRUE", "true")
+	suite.set("TEST_BOOL_TRUE_UPPER", "TRUE")
+	suite.set("TEST_BOOL_FALSE", "false")
 	suite.set("TEST_DURATION", "5m3s")
 	suite.set("TEST_TIME_YYYYMMDD", "2019-12-25")
 	suite.set("TEST_TIME_RFC3339", "2019-12-25T12:00:05.0Z")
@@ -145,6 +148,30 @@ func (suite EnvironmentSuite) TestUint() {
 	suite.ExpectUint("FOO_EMPTY", 0, false)
 	suite.ExpectUint("FOO_STRING", 0, false)
 	suite.ExpectUint("FOO_INT", 0, false)
+}
+
+func (suite EnvironmentSuite) TestFloat() {
+	suite.ExpectFloat("NOT_FOUND", float64(0), false)
+	suite.ExpectFloat("FLOAT", 5.43, true)
+	suite.ExpectFloat("NEGATIVE_FLOAT", -5.1, true)
+	suite.ExpectFloat("JUST_FLOAT", 0.1, true)
+
+	suite.ExpectFloat("EMPTY", float64(0), false)
+	suite.ExpectFloat("STRING", float64(0), false)
+	suite.ExpectFloat("STRING_SLICE", float64(0), false)
+	suite.ExpectFloat("LARGE_INT", float64(0), false)
+}
+
+func (suite EnvironmentSuite) TestBool() {
+	suite.ExpectBool("NOT_FOUND", false, false)
+	suite.ExpectBool("BOOL_FALSE", false, true)
+	suite.ExpectBool("BOOL_TRUE", true, true)
+	suite.ExpectBool("BOOL_TRUE_UPPER", true, true)
+
+	suite.ExpectBool("EMPTY", false, false)
+	suite.ExpectBool("STRING", false, false)
+	suite.ExpectBool("STRING_SLICE", false, false)
+	suite.ExpectBool("LARGE_INT", false, false)
 }
 
 func (suite EnvironmentSuite) TestDuration() {

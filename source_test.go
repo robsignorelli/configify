@@ -39,6 +39,16 @@ func (suite SourceSuite) ExpectUint(key string, expected uint, expectedOK bool) 
 	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
 }
 
+func (suite SourceSuite) ExpectFloat(key string, expected float64, expectedOK bool) bool {
+	output, ok := suite.source.Float(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectBool(key string, expected bool, expectedOK bool) bool {
+	output, ok := suite.source.Bool(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
 func (suite SourceSuite) ExpectDuration(key string, expected time.Duration, expectedOK bool) bool {
 	output, ok := suite.source.Duration(key)
 	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)

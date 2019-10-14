@@ -32,6 +32,14 @@ func (Defaults) Uint(string) (uint, bool) {
 	return uint(0), false
 }
 
+func (Defaults) Float(string) (float64, bool) {
+	return float64(0), false
+}
+
+func (Defaults) Bool(string) (bool, bool) {
+	return false, false
+}
+
 func (Defaults) Duration(string) (time.Duration, bool) {
 	return time.Duration(0), false
 }

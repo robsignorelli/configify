@@ -15,6 +15,8 @@ type Source interface {
 	StringSlice(key string) ([]string, bool)
 	Int(key string) (int, bool)
 	Uint(key string) (uint, bool)
+	Float(key string) (float64, bool)
+	Bool(key string) (bool, bool)
 	Duration(key string) (time.Duration, bool)
 	Time(key string) (time.Time, bool)
 }

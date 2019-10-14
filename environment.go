@@ -76,6 +76,33 @@ func (e environmentSource) Uint(key string) (uint, bool) {
 	return uint(number), true
 }
 
+func (e environmentSource) Float(key string) (float64, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Float(key)
+	}
+	number, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return float64(0), false
+	}
+	return number, true
+}
+
+func (e environmentSource) Bool(key string) (bool, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Bool(key)
+	}
+	switch strings.ToLower(value) {
+	case "true":
+		return true, true
+	case "false":
+		return false, true
+	default:
+		return false, false
+	}
+}
+
 func (e environmentSource) Duration(key string) (time.Duration, bool) {
 	value, ok := e.lookup(key)
 	if !ok {

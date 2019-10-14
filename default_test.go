@@ -35,6 +35,12 @@ func (suite DefaultSuite) TestAll() {
 	suite.ExpectUint("", uint(0), false)
 	suite.ExpectUint("anything", uint(0), false)
 
+	suite.ExpectFloat("", float64(0), false)
+	suite.ExpectFloat("anything", float64(0), false)
+
+	suite.ExpectBool("", false, false)
+	suite.ExpectBool("anything", false, false)
+
 	suite.ExpectDuration("", time.Duration(0), false)
 	suite.ExpectDuration("anything", time.Duration(0), false)
 

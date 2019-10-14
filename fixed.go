@@ -62,6 +62,20 @@ func (s fixedSource) Uint(key string) (uint, bool) {
 	return s.options.Defaults.Uint(key)
 }
 
+func (s fixedSource) Float(key string) (float64, bool) {
+	if val, ok := s.values[s.options.QualifyKey(key)].(float64); ok {
+		return val, true
+	}
+	return s.options.Defaults.Float(key)
+}
+
+func (s fixedSource) Bool(key string) (bool, bool) {
+	if val, ok := s.values[s.options.QualifyKey(key)].(bool); ok {
+		return val, true
+	}
+	return s.options.Defaults.Bool(key)
+}
+
 func (s fixedSource) Duration(key string) (time.Duration, bool) {
 	if val, ok := s.values[s.options.QualifyKey(key)].(time.Duration); ok {
 		return val, true

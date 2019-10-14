@@ -37,6 +37,8 @@ func (suite *FixedSuite) SetupSuite() {
 		"UINT32":             uint(8),
 		"UINT64":             uint(9),
 		"FLOAT":              5.430,
+		"BOOL_TRUE":          true,
+		"BOOL_FALSE":         false,
 		"LARGE_FLOAT":        5300123.430,
 		"NEGATIVE_FLOAT":     -5.1,
 		"DURATION":           5 * time.Minute,
@@ -96,6 +98,29 @@ func (suite FixedSuite) TestUint() {
 	suite.ExpectUint("LARGE_INT", uint(0), false)
 	suite.ExpectUint("NEGATIVE", uint(0), false)
 	suite.ExpectUint("FLOAT", uint(0), false)
+}
+
+func (suite FixedSuite) TestBool() {
+	suite.ExpectBool("NOT_FOUND", false, false)
+	suite.ExpectBool("BOOL_TRUE", true, true)
+	suite.ExpectBool("BOOL_FALSE", false, true)
+
+	// Only values strongly typed as strings will resolve properly.
+	suite.ExpectBool("EMPTY", false, false)
+	suite.ExpectBool("STRING", false, false)
+	suite.ExpectBool("STRING_SLICE", false, false)
+	suite.ExpectBool("UINT", false, false)
+}
+
+func (suite FixedSuite) TestFloat() {
+	suite.ExpectFloat("NOT_FOUND", float64(0), false)
+	suite.ExpectFloat("FLOAT", 5.430, true)
+
+	// Only values strongly typed as strings will resolve properly.
+	suite.ExpectFloat("EMPTY", float64(0), false)
+	suite.ExpectFloat("STRING", float64(0), false)
+	suite.ExpectFloat("STRING_SLICE", float64(0), false)
+	suite.ExpectFloat("UINT", float64(0), false)
 }
 
 func (suite FixedSuite) TestDuration() {

@@ -40,6 +40,12 @@ type TestStruct struct {
 	UintRenamed uint `conf:"some_uint"`
 	UintPointer *uint
 
+	Bool        bool
+	BoolPointer *bool
+
+	Float        float64
+	FloatPointer *float64
+
 	Duration        time.Duration
 	DurationPointer *time.Duration
 
@@ -74,6 +80,8 @@ func (suite BinderSuite) populateTestStruct() TestStruct {
 	nestedPointerStringVal := "NestedPointerInnerC"
 	durationPointerVal := 10 * time.Minute
 	timePointerVal := time.Date(2019, 12, 25, 11, 59, 59, 0, time.UTC)
+	boolPointerVal := true
+	floatPointerVal := 3.14
 
 	value := TestStruct{
 		String:        "A",
@@ -97,6 +105,12 @@ func (suite BinderSuite) populateTestStruct() TestStruct {
 		StringSlice:        []string{"Foo1", "Bar1"},
 		StringSlice2:       []string{"Foo2", "Bar2"},
 		StringSliceRenamed: []string{"Foo3", "Bar3"},
+
+		Bool:        true,
+		BoolPointer: &boolPointerVal,
+
+		Float:        123.456,
+		FloatPointer: &floatPointerVal,
 
 		Duration:        5 * time.Minute,
 		DurationPointer: &durationPointerVal,
@@ -179,6 +193,12 @@ func (suite BinderSuite) TestModelBinder_NoDefaults() {
 	suite.Nil(input.StringSlice2)
 	suite.Nil(input.StringSliceRenamed)
 
+	suite.Equal(false, input.Bool)
+	suite.Nil(input.BoolPointer)
+
+	suite.Equal(float64(0), input.Float)
+	suite.Nil(input.FloatPointer)
+
 	suite.Equal(time.Duration(0), input.Duration)
 	suite.Nil(input.DurationPointer)
 
@@ -223,6 +243,12 @@ func (suite BinderSuite) TestModelBinder_KeepDefaults() {
 
 	suite.Equal(5*time.Minute, input.Duration)
 	suite.Equal(10*time.Minute, *input.DurationPointer)
+
+	suite.Equal(true, input.Bool)
+	suite.Equal(true, *input.BoolPointer)
+
+	suite.Equal(123.456, input.Float)
+	suite.Equal(3.14, *input.FloatPointer)
 
 	suite.Equal(time.Date(2019, 9, 1, 12, 0, 0, 0, time.UTC), input.Time)
 	suite.Equal(time.Date(2019, 12, 25, 11, 59, 59, 0, time.UTC), *input.TimePointer)
@@ -281,6 +307,13 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 		source.On("Uint", "some_uint").Return(uint(114), true)
 		source.On("Uint", "UINT_POINTER").Return(uint(115), true)
 
+		// They defaults on the struct are true, so flip them back to false.
+		source.On("Bool", "BOOL").Return(false, true)
+		source.On("Bool", "BOOL_POINTER").Return(false, true)
+
+		source.On("Float", "FLOAT").Return(99.123, true)
+		source.On("Float", "FLOAT_POINTER").Return(98765.4321, true)
+
 		source.On("Duration", "DURATION").Return(1*time.Hour, true)
 		source.On("Duration", "DURATION_POINTER").Return(2*time.Hour, true)
 
@@ -336,6 +369,12 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 	suite.Equal(uint(113), input.UintValue)
 	suite.Equal(uint(114), input.UintRenamed)
 	suite.Equal(uint(115), *input.UintPointer)
+
+	suite.Equal(false, input.Bool)
+	suite.Equal(false, *input.BoolPointer)
+
+	suite.Equal(99.123, input.Float)
+	suite.Equal(98765.4321, *input.FloatPointer)
 
 	suite.ElementsMatch([]string{"New-Foo1", "New-Bar1"}, input.StringSlice)
 	suite.ElementsMatch([]string{"New-Foo2", "New-Bar2"}, input.StringSlice2)
