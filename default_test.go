@@ -32,11 +32,38 @@ func (suite DefaultSuite) TestAll() {
 	suite.ExpectInt("", 0, false)
 	suite.ExpectInt("anything", 0, false)
 
+	suite.ExpectInt8("", int8(0), false)
+	suite.ExpectInt8("anything", int8(0), false)
+
+	suite.ExpectInt16("", int16(0), false)
+	suite.ExpectInt16("anything", int16(0), false)
+
+	suite.ExpectInt32("", int32(0), false)
+	suite.ExpectInt32("anything", int32(0), false)
+
+	suite.ExpectInt64("", int64(0), false)
+	suite.ExpectInt64("anything", int64(0), false)
+
 	suite.ExpectUint("", uint(0), false)
 	suite.ExpectUint("anything", uint(0), false)
 
-	suite.ExpectFloat("", float64(0), false)
-	suite.ExpectFloat("anything", float64(0), false)
+	suite.ExpectUint8("", uint8(0), false)
+	suite.ExpectUint8("anything", uint8(0), false)
+
+	suite.ExpectUint16("", uint16(0), false)
+	suite.ExpectUint16("anything", uint16(0), false)
+
+	suite.ExpectUint32("", uint32(0), false)
+	suite.ExpectUint32("anything", uint32(0), false)
+
+	suite.ExpectUint64("", uint64(0), false)
+	suite.ExpectUint64("anything", uint64(0), false)
+
+	suite.ExpectFloat32("", float32(0), false)
+	suite.ExpectFloat32("anything", float32(0), false)
+
+	suite.ExpectFloat64("", float64(0), false)
+	suite.ExpectFloat64("anything", float64(0), false)
 
 	suite.ExpectBool("", false, false)
 	suite.ExpectBool("anything", false, false)

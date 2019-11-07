@@ -86,7 +86,7 @@ func (b standardBinder) updateValue(field reflect.StructField, value reflect.Val
 			value.SetUint(uint64(v))
 		}
 	case reflect.Float64:
-		if v, ok := b.Source.Float(key); ok {
+		if v, ok := b.Source.Float64(key); ok {
 			value.SetFloat(v)
 		}
 	case reflect.Struct:
@@ -131,7 +131,7 @@ func (b standardBinder) updatePointer(field reflect.StructField, value reflect.V
 			value.Set(reflect.ValueOf(&v))
 		}
 	case reflect.Float64:
-		if v, ok := b.Source.Float(key); ok {
+		if v, ok := b.Source.Float64(key); ok {
 			value.Set(reflect.ValueOf(&v))
 		}
 	case reflect.Struct:

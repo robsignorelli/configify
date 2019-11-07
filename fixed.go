@@ -40,6 +40,34 @@ func (s fixedSource) Int(key string) (int, bool) {
 	return 0, false
 }
 
+func (s fixedSource) Int8(key string) (int8, bool) {
+	if val, ok := s.values[key].(int8); ok {
+		return val, true
+	}
+	return 0, false
+}
+
+func (s fixedSource) Int16(key string) (int16, bool) {
+	if val, ok := s.values[key].(int16); ok {
+		return val, true
+	}
+	return 0, false
+}
+
+func (s fixedSource) Int32(key string) (int32, bool) {
+	if val, ok := s.values[key].(int32); ok {
+		return val, true
+	}
+	return 0, false
+}
+
+func (s fixedSource) Int64(key string) (int64, bool) {
+	if val, ok := s.values[key].(int64); ok {
+		return val, true
+	}
+	return 0, false
+}
+
 func (s fixedSource) Uint(key string) (uint, bool) {
 	if val, ok := s.values[key].(uint); ok {
 		return val, true
@@ -47,9 +75,44 @@ func (s fixedSource) Uint(key string) (uint, bool) {
 	return uint(0), false
 }
 
-func (s fixedSource) Float(key string) (float64, bool) {
+func (s fixedSource) Uint8(key string) (uint8, bool) {
+	if val, ok := s.values[key].(uint8); ok {
+		return val, true
+	}
+	return 0, false
+}
+
+func (s fixedSource) Uint16(key string) (uint16, bool) {
+	if val, ok := s.values[key].(uint16); ok {
+		return val, true
+	}
+	return 0, false
+}
+
+func (s fixedSource) Uint32(key string) (uint32, bool) {
+	if val, ok := s.values[key].(uint32); ok {
+		return val, true
+	}
+	return 0, false
+}
+
+func (s fixedSource) Uint64(key string) (uint64, bool) {
+	if val, ok := s.values[key].(uint64); ok {
+		return val, true
+	}
+	return 0, false
+}
+
+func (s fixedSource) Float64(key string) (float64, bool) {
 	if val, ok := s.values[key].(float64); ok {
 		return val, true
+	}
+	return 0.0, false
+}
+
+func (s fixedSource) Float32(key string) (float32, bool) {
+	if val, ok := s.values[key].(float32); ok {
+		return float32(val), true
 	}
 	return 0.0, false
 }

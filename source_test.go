@@ -48,13 +48,58 @@ func (suite SourceSuite) ExpectInt(key string, expected int, expectedOK bool) bo
 	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
 }
 
+func (suite SourceSuite) ExpectInt8(key string, expected int8, expectedOK bool) bool {
+	output, ok := suite.source.Int8(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectInt16(key string, expected int16, expectedOK bool) bool {
+	output, ok := suite.source.Int16(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectInt32(key string, expected int32, expectedOK bool) bool {
+	output, ok := suite.source.Int32(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectInt64(key string, expected int64, expectedOK bool) bool {
+	output, ok := suite.source.Int64(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
 func (suite SourceSuite) ExpectUint(key string, expected uint, expectedOK bool) bool {
 	output, ok := suite.source.Uint(key)
 	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
 }
 
-func (suite SourceSuite) ExpectFloat(key string, expected float64, expectedOK bool) bool {
-	output, ok := suite.source.Float(key)
+func (suite SourceSuite) ExpectUint8(key string, expected uint8, expectedOK bool) bool {
+	output, ok := suite.source.Uint8(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectUint16(key string, expected uint16, expectedOK bool) bool {
+	output, ok := suite.source.Uint16(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectUint32(key string, expected uint32, expectedOK bool) bool {
+	output, ok := suite.source.Uint32(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectUint64(key string, expected uint64, expectedOK bool) bool {
+	output, ok := suite.source.Uint64(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectFloat32(key string, expected float32, expectedOK bool) bool {
+	output, ok := suite.source.Float32(key)
+	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
+}
+
+func (suite SourceSuite) ExpectFloat64(key string, expected float64, expectedOK bool) bool {
+	output, ok := suite.source.Float64(key)
 	return suite.checkOK(key, expectedOK, ok) && suite.Equal(expected, output)
 }
 

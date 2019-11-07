@@ -1,6 +1,7 @@
 package configify
 
 import (
+	"strconv"
 	"strings"
 	"time"
 )
@@ -14,8 +15,17 @@ type Source interface {
 	String(key string) (string, bool)
 	StringSlice(key string) ([]string, bool)
 	Int(key string) (int, bool)
+	Int8(key string) (int8, bool)
+	Int16(key string) (int16, bool)
+	Int32(key string) (int32, bool)
+	Int64(key string) (int64, bool)
 	Uint(key string) (uint, bool)
-	Float(key string) (float64, bool)
+	Uint8(key string) (uint8, bool)
+	Uint16(key string) (uint16, bool)
+	Uint32(key string) (uint32, bool)
+	Uint64(key string) (uint64, bool)
+	Float32(key string) (float32, bool)
+	Float64(key string) (float64, bool)
 	Bool(key string) (bool, bool)
 	Duration(key string) (time.Duration, bool)
 	Time(key string) (time.Time, bool)
@@ -89,4 +99,20 @@ func normalizeInteger(value string, groupSep rune, decimalSep rune) string {
 		value = value[:decimalPos]
 	}
 	return strings.ReplaceAll(value, string(groupSep), "")
+}
+
+func parseInt64(value string, groupSep rune, decimalSep rune) (int64, bool) {
+	number, err := strconv.ParseInt(normalizeInteger(value, groupSep, decimalSep), 10, 64)
+	if err != nil {
+		return 0, false
+	}
+	return number, true
+}
+
+func parseUint64(value string, groupSep rune, decimalSep rune) (uint64, bool) {
+	number, err := strconv.ParseUint(normalizeInteger(value, groupSep, decimalSep), 10, 64)
+	if err != nil {
+		return 0, false
+	}
+	return number, true
 }

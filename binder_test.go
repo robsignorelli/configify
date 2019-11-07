@@ -43,8 +43,8 @@ type TestStruct struct {
 	Bool        bool
 	BoolPointer *bool
 
-	Float        float64
-	FloatPointer *float64
+	Float64        float64
+	Float64Pointer *float64
 
 	Duration        time.Duration
 	DurationPointer *time.Duration
@@ -81,7 +81,7 @@ func (suite BinderSuite) populateTestStruct() TestStruct {
 	durationPointerVal := 10 * time.Minute
 	timePointerVal := time.Date(2019, 12, 25, 11, 59, 59, 0, time.UTC)
 	boolPointerVal := true
-	floatPointerVal := 3.14
+	float64PointerVal := 3.14
 
 	value := TestStruct{
 		String:        "A",
@@ -109,8 +109,8 @@ func (suite BinderSuite) populateTestStruct() TestStruct {
 		Bool:        true,
 		BoolPointer: &boolPointerVal,
 
-		Float:        123.456,
-		FloatPointer: &floatPointerVal,
+		Float64:        123.456,
+		Float64Pointer: &float64PointerVal,
 
 		Duration:        5 * time.Minute,
 		DurationPointer: &durationPointerVal,
@@ -196,8 +196,8 @@ func (suite BinderSuite) TestModelBinder_NoDefaults() {
 	suite.Equal(false, input.Bool)
 	suite.Nil(input.BoolPointer)
 
-	suite.Equal(float64(0), input.Float)
-	suite.Nil(input.FloatPointer)
+	suite.Equal(float64(0), input.Float64)
+	suite.Nil(input.Float64Pointer)
 
 	suite.Equal(time.Duration(0), input.Duration)
 	suite.Nil(input.DurationPointer)
@@ -247,8 +247,8 @@ func (suite BinderSuite) TestModelBinder_KeepDefaults() {
 	suite.Equal(true, input.Bool)
 	suite.Equal(true, *input.BoolPointer)
 
-	suite.Equal(123.456, input.Float)
-	suite.Equal(3.14, *input.FloatPointer)
+	suite.Equal(123.456, input.Float64)
+	suite.Equal(3.14, *input.Float64Pointer)
 
 	suite.Equal(time.Date(2019, 9, 1, 12, 0, 0, 0, time.UTC), input.Time)
 	suite.Equal(time.Date(2019, 12, 25, 11, 59, 59, 0, time.UTC), *input.TimePointer)
@@ -311,8 +311,8 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 		source.On("Bool", "BOOL").Return(false, true)
 		source.On("Bool", "BOOL_POINTER").Return(false, true)
 
-		source.On("Float", "FLOAT").Return(99.123, true)
-		source.On("Float", "FLOAT_POINTER").Return(98765.4321, true)
+		source.On("Float64", "FLOAT64").Return(99.123, true)
+		source.On("Float64", "FLOAT64_POINTER").Return(98765.4321, true)
 
 		source.On("Duration", "DURATION").Return(1*time.Hour, true)
 		source.On("Duration", "DURATION_POINTER").Return(2*time.Hour, true)
@@ -373,8 +373,8 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 	suite.Equal(false, input.Bool)
 	suite.Equal(false, *input.BoolPointer)
 
-	suite.Equal(99.123, input.Float)
-	suite.Equal(98765.4321, *input.FloatPointer)
+	suite.Equal(99.123, input.Float64)
+	suite.Equal(98765.4321, *input.Float64Pointer)
 
 	suite.ElementsMatch([]string{"New-Foo1", "New-Bar1"}, input.StringSlice)
 	suite.ElementsMatch([]string{"New-Foo2", "New-Bar2"}, input.StringSlice2)

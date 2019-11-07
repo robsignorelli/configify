@@ -28,11 +28,47 @@ func (Defaults) Int(string) (int, bool) {
 	return 0, false
 }
 
+func (Defaults) Int8(string) (int8, bool) {
+	return int8(0), false
+}
+
+func (Defaults) Int16(string) (int16, bool) {
+	return int16(0), false
+}
+
+func (Defaults) Int32(string) (int32, bool) {
+	return int32(0), false
+}
+
+func (Defaults) Int64(string) (int64, bool) {
+	return int64(0), false
+}
+
 func (Defaults) Uint(string) (uint, bool) {
 	return uint(0), false
 }
 
-func (Defaults) Float(string) (float64, bool) {
+func (Defaults) Uint8(string) (uint8, bool) {
+	return uint8(0), false
+}
+
+func (Defaults) Uint16(string) (uint16, bool) {
+	return uint16(0), false
+}
+
+func (Defaults) Uint32(string) (uint32, bool) {
+	return uint32(0), false
+}
+
+func (Defaults) Uint64(string) (uint64, bool) {
+	return uint64(0), false
+}
+
+func (Defaults) Float32(string) (float32, bool) {
+	return float32(0), false
+}
+
+func (Defaults) Float64(string) (float64, bool) {
 	return float64(0), false
 }
 

@@ -57,11 +57,43 @@ func (e environmentSource) Int(key string) (int, bool) {
 	if !ok {
 		return e.options.Defaults.Int(key)
 	}
-	number, err := strconv.ParseInt(normalizeInteger(value, ',', '.'), 10, 64)
-	if err != nil {
-		return 0, false
+	number, ok := parseInt64(value, ',', '.')
+	return int(number), ok
+}
+
+func (e environmentSource) Int8(key string) (int8, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Int8(key)
 	}
-	return int(number), true
+	number, ok := parseInt64(value, ',', '.')
+	return int8(number), ok
+}
+
+func (e environmentSource) Int16(key string) (int16, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Int16(key)
+	}
+	number, ok := parseInt64(value, ',', '.')
+	return int16(number), ok
+}
+
+func (e environmentSource) Int32(key string) (int32, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Int32(key)
+	}
+	number, ok := parseInt64(value, ',', '.')
+	return int32(number), ok
+}
+
+func (e environmentSource) Int64(key string) (int64, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Int64(key)
+	}
+	return parseInt64(value, ',', '.')
 }
 
 func (e environmentSource) Uint(key string) (uint, bool) {
@@ -69,17 +101,61 @@ func (e environmentSource) Uint(key string) (uint, bool) {
 	if !ok {
 		return e.options.Defaults.Uint(key)
 	}
-	number, err := strconv.ParseUint(normalizeInteger(value, ',', '.'), 10, 64)
-	if err != nil {
-		return uint(0), false
-	}
-	return uint(number), true
+	number, ok := parseUint64(value, ',', '.')
+	return uint(number), ok
 }
 
-func (e environmentSource) Float(key string) (float64, bool) {
+func (e environmentSource) Uint8(key string) (uint8, bool) {
 	value, ok := e.lookup(key)
 	if !ok {
-		return e.options.Defaults.Float(key)
+		return e.options.Defaults.Uint8(key)
+	}
+	number, ok := parseUint64(value, ',', '.')
+	return uint8(number), ok
+}
+
+func (e environmentSource) Uint16(key string) (uint16, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Uint16(key)
+	}
+	number, ok := parseUint64(value, ',', '.')
+	return uint16(number), ok
+}
+
+func (e environmentSource) Uint32(key string) (uint32, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Uint32(key)
+	}
+	number, ok := parseUint64(value, ',', '.')
+	return uint32(number), ok
+}
+
+func (e environmentSource) Uint64(key string) (uint64, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Uint64(key)
+	}
+	return parseUint64(value, ',', '.')
+}
+
+func (e environmentSource) Float32(key string) (float32, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Float32(key)
+	}
+	number, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return float32(0), false
+	}
+	return float32(number), true
+}
+
+func (e environmentSource) Float64(key string) (float64, bool) {
+	value, ok := e.lookup(key)
+	if !ok {
+		return e.options.Defaults.Float64(key)
 	}
 	number, err := strconv.ParseFloat(value, 64)
 	if err != nil {

@@ -26,7 +26,15 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("TEST_STRING_SPACE", "  foo bar ")
 	suite.set("TEST_STRING_SLICE", "foo, bar, baz ,5 ")
 	suite.set("TEST_INT", "5")
+	suite.set("TEST_INT8", "8")
+	suite.set("TEST_INT16", "16")
+	suite.set("TEST_INT32", "32")
+	suite.set("TEST_INT64", "64")
 	suite.set("TEST_UINT", "90")
+	suite.set("TEST_UINT8", "80")
+	suite.set("TEST_UINT16", "160")
+	suite.set("TEST_UINT32", "320")
+	suite.set("TEST_UINT64", "640")
 	suite.set("TEST_BOOL_TRUE", "true")
 	suite.set("TEST_BOOL_TRUE_UPPER", "TRUE")
 	suite.set("TEST_BOOL_FALSE", "false")
@@ -36,6 +44,7 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("TEST_LARGE_INT", "5,300,123")
 	suite.set("TEST_NEGATIVE", "-3")
 	suite.set("TEST_FLOAT", "5.430")
+	suite.set("TEST_FLOAT32", "2.89")
 	suite.set("TEST_LARGE_FLOAT", "5,300,123.430")
 	suite.set("TEST_NEGATIVE_FLOAT", "-5.1")
 	suite.set("TEST_JUST_FLOAT", ".1")
@@ -136,6 +145,58 @@ func (suite EnvironmentSuite) TestInt() {
 	suite.ExpectInt("FOO_INT", 0, false)
 }
 
+func (suite EnvironmentSuite) TestInt8() {
+	// Only values that properly parse to integers are "ok"
+	suite.ExpectInt8("NOT_FOUND", int8(0), false)
+	suite.ExpectInt8("EMPTY", int8(0), false)
+	suite.ExpectInt8("STRING", int8(0), false)
+	suite.ExpectInt8("INT", int8(5), true)
+	suite.ExpectInt8("INT8", int8(8), true)
+	suite.ExpectInt8("INT16", int8(16), true)
+
+	// Does not fetch values from other namespaces
+	suite.ExpectInt("FOO_INT", 0, false)
+}
+
+func (suite EnvironmentSuite) TestInt16() {
+	// Only values that properly parse to integers are "ok"
+	suite.ExpectInt16("NOT_FOUND", int16(0), false)
+	suite.ExpectInt16("EMPTY", int16(0), false)
+	suite.ExpectInt16("STRING", int16(0), false)
+	suite.ExpectInt16("INT", int16(5), true)
+	suite.ExpectInt16("INT16", int16(16), true)
+	suite.ExpectInt16("INT16", int16(16), true)
+
+	// Does not fetch values from other namespaces
+	suite.ExpectInt("FOO_INT", 0, false)
+}
+
+func (suite EnvironmentSuite) TestInt32() {
+	// Only values that properly parse to integers are "ok"
+	suite.ExpectInt32("NOT_FOUND", int32(0), false)
+	suite.ExpectInt32("EMPTY", int32(0), false)
+	suite.ExpectInt32("STRING", int32(0), false)
+	suite.ExpectInt32("INT", int32(5), true)
+	suite.ExpectInt32("INT32", int32(32), true)
+	suite.ExpectInt32("INT16", int32(16), true)
+
+	// Does not fetch values from other namespaces
+	suite.ExpectInt("FOO_INT", 0, false)
+}
+
+func (suite EnvironmentSuite) TestInt64() {
+	// Only values that properly parse to integers are "ok"
+	suite.ExpectInt64("NOT_FOUND", int64(0), false)
+	suite.ExpectInt64("EMPTY", int64(0), false)
+	suite.ExpectInt64("STRING", int64(0), false)
+	suite.ExpectInt64("INT", int64(5), true)
+	suite.ExpectInt64("INT64", int64(64), true)
+	suite.ExpectInt64("INT16", int64(16), true)
+
+	// Does not fetch values from other namespaces
+	suite.ExpectInt("FOO_INT", 0, false)
+}
+
 func (suite EnvironmentSuite) TestUint() {
 	// Only values that properly parse to integers are "ok"
 	suite.ExpectUint("NOT_FOUND", uint(0), false)
@@ -159,16 +220,80 @@ func (suite EnvironmentSuite) TestUint() {
 	suite.ExpectUint("FOO_INT", 0, false)
 }
 
-func (suite EnvironmentSuite) TestFloat() {
-	suite.ExpectFloat("NOT_FOUND", float64(0), false)
-	suite.ExpectFloat("FLOAT", 5.43, true)
-	suite.ExpectFloat("NEGATIVE_FLOAT", -5.1, true)
-	suite.ExpectFloat("JUST_FLOAT", 0.1, true)
+func (suite EnvironmentSuite) TestUint8() {
+	// Only values that properly parse to uintegers are "ok"
+	suite.ExpectUint8("NOT_FOUND", uint8(0), false)
+	suite.ExpectUint8("EMPTY", uint8(0), false)
+	suite.ExpectUint8("STRING", uint8(0), false)
+	suite.ExpectUint8("UINT", uint8(90), true)
+	suite.ExpectUint8("UINT8", uint8(80), true)
+	suite.ExpectUint8("UINT16", uint8(160), true)
 
-	suite.ExpectFloat("EMPTY", float64(0), false)
-	suite.ExpectFloat("STRING", float64(0), false)
-	suite.ExpectFloat("STRING_SLICE", float64(0), false)
-	suite.ExpectFloat("LARGE_INT", float64(0), false)
+	// Does not fetch values from other namespaces
+	suite.ExpectUint("FOO_UINT", 0, false)
+}
+
+func (suite EnvironmentSuite) TestUint16() {
+	// Only values that properly parse to uintegers are "ok"
+	suite.ExpectUint16("NOT_FOUND", uint16(0), false)
+	suite.ExpectUint16("EMPTY", uint16(0), false)
+	suite.ExpectUint16("STRING", uint16(0), false)
+	suite.ExpectUint16("UINT", uint16(90), true)
+	suite.ExpectUint16("UINT16", uint16(160), true)
+	suite.ExpectUint16("UINT16", uint16(160), true)
+
+	// Does not fetch values from other namespaces
+	suite.ExpectUint("FOO_UINT", 0, false)
+}
+
+func (suite EnvironmentSuite) TestUint32() {
+	// Only values that properly parse to uintegers are "ok"
+	suite.ExpectUint32("NOT_FOUND", uint32(0), false)
+	suite.ExpectUint32("EMPTY", uint32(0), false)
+	suite.ExpectUint32("STRING", uint32(0), false)
+	suite.ExpectUint32("UINT", uint32(90), true)
+	suite.ExpectUint32("UINT32", uint32(320), true)
+	suite.ExpectUint32("UINT16", uint32(160), true)
+
+	// Does not fetch values from other namespaces
+	suite.ExpectUint("FOO_UINT", 0, false)
+}
+
+func (suite EnvironmentSuite) TestUint64() {
+	// Only values that properly parse to uintegers are "ok"
+	suite.ExpectUint64("NOT_FOUND", uint64(0), false)
+	suite.ExpectUint64("EMPTY", uint64(0), false)
+	suite.ExpectUint64("STRING", uint64(0), false)
+	suite.ExpectUint64("UINT", uint64(90), true)
+	suite.ExpectUint64("UINT64", uint64(640), true)
+	suite.ExpectUint64("UINT16", uint64(160), true)
+
+	// Does not fetch values from other namespaces
+	suite.ExpectUint("FOO_UINT", 0, false)
+}
+
+func (suite EnvironmentSuite) TestFloat64() {
+	suite.ExpectFloat64("NOT_FOUND", float64(0), false)
+	suite.ExpectFloat64("FLOAT", 5.43, true)
+	suite.ExpectFloat64("NEGATIVE_FLOAT", -5.1, true)
+	suite.ExpectFloat64("JUST_FLOAT", 0.1, true)
+
+	suite.ExpectFloat64("EMPTY", float64(0), false)
+	suite.ExpectFloat64("STRING", float64(0), false)
+	suite.ExpectFloat64("STRING_SLICE", float64(0), false)
+	suite.ExpectFloat64("LARGE_INT", float64(0), false)
+}
+
+func (suite EnvironmentSuite) TestFloat32() {
+	suite.ExpectFloat32("NOT_FOUND", float32(0), false)
+	suite.ExpectFloat32("FLOAT", 5.43, true)
+	suite.ExpectFloat32("NEGATIVE_FLOAT", -5.1, true)
+	suite.ExpectFloat32("JUST_FLOAT", 0.1, true)
+
+	suite.ExpectFloat32("EMPTY", float32(0), false)
+	suite.ExpectFloat32("STRING", float32(0), false)
+	suite.ExpectFloat32("STRING_SLICE", float32(0), false)
+	suite.ExpectFloat32("LARGE_INT", float32(0), false)
 }
 
 func (suite EnvironmentSuite) TestBool() {
