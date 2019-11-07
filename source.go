@@ -30,14 +30,9 @@ type Options struct {
 	// Under the hood, configify will look up "MY_APP_NAME" for you.
 	//
 	// This helps you enforce good variable naming practices especially when running in
-	// environments shared with other processes/services that might have their own variables.
-	Namespace string
-
-	// NamespaceDelim defines the separator to use when composing a Namespace with a variable
-	// name. For instance, if you have the Namespace "FOO" and you're calling `GetString("BAR")`
-	// with the NamespaceDelim "." then we'll look up the attribute "FOO.BAR". This defaults to
-	// underscore if not supplied explicitly.
-	NamespaceDelim string
+	// environments shared with other processes/services/components that might have their own
+	// similarly named variables.
+	Namespace Namespace
 
 	// Defaults is an optional "fallback" for values when the source you're creating does not
 	// contain the requested value. For instance if your source has values for "FOO" and "BAR"
@@ -47,16 +42,29 @@ type Options struct {
 	Defaults Source
 }
 
-// QualifyKey takes the non-qualified config attribute name (e.g. "PORT") and returns the fully
-// qualified attribute name w/ its Namespace prepended (e.g. "MY_APP_PORT").
-func (o Options) QualifyKey(key string) string {
-	return o.JoinKey(o.NamespaceDelim, o.Namespace, key)
+// Namespace defines a fixed prefix for keys in your config store. This helps you isolate your
+// config values to certain services or components. For instance for all HTTP router configuration
+// you can use the namespace "HTTP" or for the configs for your RabbitMQ component, you can use
+// the namespace "RABBITMQ", and so on.
+type Namespace struct {
+	Name      string
+	Delimiter string
 }
 
-// JoinKey constructs a well-formed key by joining the given segments, ignoring any empty "". This
-// will ensure that there are no consecutive delimiters or leading/trailing ones.
-func (o Options) JoinKey(segments ...string) string {
-	delim := strings.TrimSpace(o.NamespaceDelim)
+// Qualify takes the raw, unqualified key name (e.g. "PORT") and returns the namespace-qualified
+// key name (e.g. "HTTP_PORT").
+func (ns Namespace) Qualify(key string) string {
+	if ns.Name == "" {
+		return key
+	}
+	return ns.Join(ns.Name, key)
+}
+
+// Join constructs a well-formed value by joining the given segments, ignoring any empty "". This
+// will ensure that there are no consecutive delimiters or leading/trailing ones. This does NOT
+// force the namespace name as a prefix!
+func (ns Namespace) Join(segments ...string) string {
+	delim := strings.TrimSpace(ns.Delimiter)
 	if delim == "" {
 		delim = "_"
 	}

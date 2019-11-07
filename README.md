@@ -30,6 +30,5 @@ func main() {
  ## Setting Default Values
  
  It's quite common to want to have your Source fall back to a known
- default when it does not contain an explicit value for your key. You can 
- use the `Fixed` source, which is simply backed by a map, to define those
- defaults. 
+ default when it does not contain an explicit value for your key. In
+ Configify, you can actually define another Source to fall back to.

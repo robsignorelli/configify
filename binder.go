@@ -47,7 +47,7 @@ func (b standardBinder) bindPrefixWithType(out interface{}, prefix string, outTy
 	for i := 0; i < outType.NumField(); i++ {
 		field := outType.Field(i)
 		value := outValue.Field(i)
-		key := b.Source.Options().JoinKey(prefix, b.resolveName(field))
+		key := b.Source.Options().Namespace.Join(prefix, b.resolveName(field))
 
 		b.updateValue(field, value, key)
 	}

@@ -423,13 +423,11 @@ func ExampleNewBinder() {
 		Port   int
 		Labels []string `conf:"TAGS"`
 	}{}
-	source := configify.Fixed(
-		configify.Options{Namespace: "MYAPP"},
-		configify.Values{
-			"HOST": "localhost",
-			"PORT": 1234,
-			"TAGS": []string{"a", "b", "c"},
-		})
+	source := configify.Fixed(configify.Values{
+		"HOST": "localhost",
+		"PORT": 1234,
+		"TAGS": []string{"a", "b", "c"},
+	})
 
 	// Overlay the source's value onto our 'config' struct.
 	binder := configify.NewBinder(source)

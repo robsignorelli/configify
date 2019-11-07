@@ -12,6 +12,20 @@ type SourceSuite struct {
 	source configify.Source
 }
 
+func (suite SourceSuite) TestNamespace_Qualify() {
+	ns := configify.Namespace{}
+	suite.Equal("BAR", ns.Qualify("BAR"))
+
+	ns = configify.Namespace{Name: "FOO"}
+	suite.Equal("FOO_BAR", ns.Qualify("BAR"))
+
+	ns = configify.Namespace{Name: "FOO", Delimiter: "."}
+	suite.Equal("FOO.BAR", ns.Qualify("BAR"))
+
+	ns = configify.Namespace{Name: "FOO  ", Delimiter: "  .  "}
+	suite.Equal("FOO.BAR", ns.Qualify("BAR"))
+}
+
 func (suite SourceSuite) checkOK(key string, expectedOK bool, ok bool) bool {
 	if !expectedOK {
 		return suite.False(ok, "Value for '%s' should not exist", key)

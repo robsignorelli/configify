@@ -46,7 +46,7 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("FOO_INT", "5")
 
 	suite.source, _ = configify.Environment(configify.Options{
-		Namespace: "TEST",
+		Namespace: configify.Namespace{Name: "TEST"},
 	})
 }
 
@@ -55,20 +55,29 @@ func (suite EnvironmentSuite) set(key string, value string) {
 }
 
 func (suite EnvironmentSuite) TestFactory() {
-	_, err := configify.Environment(configify.Options{Namespace: ""})
+	_, err := configify.Environment(configify.Options{})
 	suite.NoError(err)
 
-	_, err = configify.Environment(configify.Options{Namespace: "FOO"})
+	_, err = configify.Environment(configify.Options{Namespace: configify.Namespace{}})
+	suite.NoError(err)
+
+	_, err = configify.Environment(configify.Options{
+		Namespace: configify.Namespace{Name: "", Delimiter: ""},
+	})
+	suite.NoError(err)
+
+	_, err = configify.Environment(configify.Options{
+		Namespace: configify.Namespace{Name: "FOO", Delimiter: "."},
+	})
 	suite.NoError(err)
 }
 
 func (suite EnvironmentSuite) TestOptions() {
 	source, _ := configify.Environment(configify.Options{
-		Namespace:      "FOO",
-		NamespaceDelim: ".",
+		Namespace: configify.Namespace{Name: "FOO", Delimiter: "."},
 	})
-	suite.Equal("FOO", source.Options().Namespace)
-	suite.Equal(".", source.Options().NamespaceDelim)
+	suite.Equal("FOO", source.Options().Namespace.Name)
+	suite.Equal(".", source.Options().Namespace.Delimiter)
 }
 
 func (suite EnvironmentSuite) TestString() {
@@ -204,7 +213,10 @@ func (suite EnvironmentSuite) TestDefaults() {
 	})
 
 	var err error
-	suite.source, err = configify.Environment(configify.Options{Namespace: "TEST", Defaults: def})
+	suite.source, err = configify.Environment(configify.Options{
+		Namespace: configify.Namespace{Name: "TEST"},
+		Defaults:  def,
+	})
 	suite.Require().NoError(err)
 
 	// For each, make sure that (A) a valid env value resolves, (B) a value in the fixed fallback

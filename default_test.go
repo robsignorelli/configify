@@ -19,8 +19,8 @@ type DefaultSuite struct {
 func (suite DefaultSuite) TestAll() {
 	suite.source = configify.Defaults{}
 	options := suite.source.Options()
-	suite.Equal("", options.Namespace)
-	suite.Equal("", options.NamespaceDelim)
+	suite.Equal("", options.Namespace.Name)
+	suite.Equal("", options.Namespace.Delimiter)
 	suite.Nil(options.Defaults)
 
 	suite.ExpectString("", "", false)

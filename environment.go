@@ -23,7 +23,7 @@ func (e environmentSource) Options() Options {
 }
 
 func (e environmentSource) lookup(key string) (string, bool) {
-	if value, ok := os.LookupEnv(e.options.QualifyKey(key)); ok {
+	if value, ok := os.LookupEnv(e.options.Namespace.Qualify(key)); ok {
 		return strings.TrimSpace(value), true
 	}
 	return "", false
