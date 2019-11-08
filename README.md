@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/robsignorelli/configify)](https://goreportcard.com/report/github.com/robsignorelli/configify)
+
 # What is Configify
 
 Configify is a lean library that helps you load configuration values from
