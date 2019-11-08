@@ -2,7 +2,6 @@ package configify
 
 import (
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -14,11 +13,12 @@ func Environment(options Options) (Source, error) {
 	if options.Defaults == nil {
 		options.Defaults = emptySource{}
 	}
-	return &environmentSource{options: options}, nil
+	return &environmentSource{options: options, massage: Massage{}}, nil
 }
 
 type environmentSource struct {
 	options Options
+	massage Massage
 }
 
 func (e environmentSource) Options() Options {
@@ -45,14 +45,7 @@ func (e environmentSource) StringSlice(key string) ([]string, bool) {
 	if !ok {
 		return e.options.Defaults.StringSlice(key)
 	}
-	if value == "" {
-		return []string{}, true
-	}
-	slice := strings.Split(value, ",")
-	for i := range slice {
-		slice[i] = strings.TrimSpace(slice[i])
-	}
-	return slice, true
+	return e.massage.StringToSlice(value)
 }
 
 func (e environmentSource) Int(key string) (int, bool) {
@@ -60,7 +53,7 @@ func (e environmentSource) Int(key string) (int, bool) {
 	if !ok {
 		return e.options.Defaults.Int(key)
 	}
-	number, ok := parseInt64(value, ',', '.')
+	number, ok := e.massage.StringToInt64(value)
 	return int(number), ok
 }
 
@@ -69,7 +62,7 @@ func (e environmentSource) Int8(key string) (int8, bool) {
 	if !ok {
 		return e.options.Defaults.Int8(key)
 	}
-	number, ok := parseInt64(value, ',', '.')
+	number, ok := e.massage.StringToInt64(value)
 	return int8(number), ok
 }
 
@@ -78,7 +71,7 @@ func (e environmentSource) Int16(key string) (int16, bool) {
 	if !ok {
 		return e.options.Defaults.Int16(key)
 	}
-	number, ok := parseInt64(value, ',', '.')
+	number, ok := e.massage.StringToInt64(value)
 	return int16(number), ok
 }
 
@@ -87,7 +80,7 @@ func (e environmentSource) Int32(key string) (int32, bool) {
 	if !ok {
 		return e.options.Defaults.Int32(key)
 	}
-	number, ok := parseInt64(value, ',', '.')
+	number, ok := e.massage.StringToInt64(value)
 	return int32(number), ok
 }
 
@@ -96,7 +89,7 @@ func (e environmentSource) Int64(key string) (int64, bool) {
 	if !ok {
 		return e.options.Defaults.Int64(key)
 	}
-	return parseInt64(value, ',', '.')
+	return e.massage.StringToInt64(value)
 }
 
 func (e environmentSource) Uint(key string) (uint, bool) {
@@ -104,7 +97,7 @@ func (e environmentSource) Uint(key string) (uint, bool) {
 	if !ok {
 		return e.options.Defaults.Uint(key)
 	}
-	number, ok := parseUint64(value, ',', '.')
+	number, ok := e.massage.StringToUint64(value)
 	return uint(number), ok
 }
 
@@ -113,7 +106,7 @@ func (e environmentSource) Uint8(key string) (uint8, bool) {
 	if !ok {
 		return e.options.Defaults.Uint8(key)
 	}
-	number, ok := parseUint64(value, ',', '.')
+	number, ok := e.massage.StringToUint64(value)
 	return uint8(number), ok
 }
 
@@ -122,7 +115,7 @@ func (e environmentSource) Uint16(key string) (uint16, bool) {
 	if !ok {
 		return e.options.Defaults.Uint16(key)
 	}
-	number, ok := parseUint64(value, ',', '.')
+	number, ok := e.massage.StringToUint64(value)
 	return uint16(number), ok
 }
 
@@ -131,7 +124,7 @@ func (e environmentSource) Uint32(key string) (uint32, bool) {
 	if !ok {
 		return e.options.Defaults.Uint32(key)
 	}
-	number, ok := parseUint64(value, ',', '.')
+	number, ok := e.massage.StringToUint64(value)
 	return uint32(number), ok
 }
 
@@ -140,7 +133,7 @@ func (e environmentSource) Uint64(key string) (uint64, bool) {
 	if !ok {
 		return e.options.Defaults.Uint64(key)
 	}
-	return parseUint64(value, ',', '.')
+	return e.massage.StringToUint64(value)
 }
 
 func (e environmentSource) Float32(key string) (float32, bool) {
@@ -148,11 +141,8 @@ func (e environmentSource) Float32(key string) (float32, bool) {
 	if !ok {
 		return e.options.Defaults.Float32(key)
 	}
-	number, err := strconv.ParseFloat(value, 64)
-	if err != nil {
-		return float32(0), false
-	}
-	return float32(number), true
+	number, ok := e.massage.StringToFloat64(value)
+	return float32(number), ok
 }
 
 func (e environmentSource) Float64(key string) (float64, bool) {
@@ -160,11 +150,7 @@ func (e environmentSource) Float64(key string) (float64, bool) {
 	if !ok {
 		return e.options.Defaults.Float64(key)
 	}
-	number, err := strconv.ParseFloat(value, 64)
-	if err != nil {
-		return float64(0), false
-	}
-	return number, true
+	return e.massage.StringToFloat64(value)
 }
 
 func (e environmentSource) Bool(key string) (bool, bool) {
@@ -172,14 +158,7 @@ func (e environmentSource) Bool(key string) (bool, bool) {
 	if !ok {
 		return e.options.Defaults.Bool(key)
 	}
-	switch strings.ToLower(value) {
-	case "true":
-		return true, true
-	case "false":
-		return false, true
-	default:
-		return false, false
-	}
+	return e.massage.StringToBool(value)
 }
 
 func (e environmentSource) Duration(key string) (time.Duration, bool) {
@@ -187,11 +166,7 @@ func (e environmentSource) Duration(key string) (time.Duration, bool) {
 	if !ok {
 		return e.options.Defaults.Duration(key)
 	}
-	duration, err := time.ParseDuration(value)
-	if err != nil {
-		return time.Duration(0), false
-	}
-	return duration, true
+	return e.massage.StringToDuration(value)
 }
 
 func (e environmentSource) Time(key string) (time.Time, bool) {
@@ -199,9 +174,5 @@ func (e environmentSource) Time(key string) (time.Time, bool) {
 	if !ok {
 		return e.options.Defaults.Time(key)
 	}
-	dateTime, err := parseTime(value)
-	if err != nil {
-		return time.Time{}, false
-	}
-	return dateTime, true
+	return e.massage.StringToTime(value)
 }

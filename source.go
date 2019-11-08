@@ -1,7 +1,6 @@
 package configify
 
 import (
-	"strconv"
 	"strings"
 	"time"
 )
@@ -100,30 +99,3 @@ func (ns Namespace) Join(segments ...string) string {
 
 // Values represents a set of key/value pairs as a map.
 type Values map[string]interface{}
-
-func normalizeInteger(value string, groupSep rune, decimalSep rune) string {
-	decimalPos := strings.IndexRune(value, decimalSep)
-	if decimalPos == 0 {
-		return ""
-	}
-	if decimalPos > 0 {
-		value = value[:decimalPos]
-	}
-	return strings.ReplaceAll(value, string(groupSep), "")
-}
-
-func parseInt64(value string, groupSep rune, decimalSep rune) (int64, bool) {
-	number, err := strconv.ParseInt(normalizeInteger(value, groupSep, decimalSep), 10, 64)
-	if err != nil {
-		return 0, false
-	}
-	return number, true
-}
-
-func parseUint64(value string, groupSep rune, decimalSep rune) (uint64, bool) {
-	number, err := strconv.ParseUint(normalizeInteger(value, groupSep, decimalSep), 10, 64)
-	if err != nil {
-		return 0, false
-	}
-	return number, true
-}

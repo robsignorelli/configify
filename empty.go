@@ -1,7 +1,6 @@
 package configify
 
 import (
-	"errors"
 	"time"
 )
 
@@ -85,15 +84,4 @@ func (emptySource) Duration(string) (time.Duration, bool) {
 
 func (emptySource) Time(string) (time.Time, bool) {
 	return time.Time{}, false
-}
-
-func parseTime(input string) (time.Time, error) {
-	switch len(input) {
-	case 0:
-		return time.Time{}, errors.New("invalid time: empty")
-	case 10:
-		return time.Parse("2006-01-02", input)
-	default:
-		return time.Parse(time.RFC3339, input)
-	}
 }
