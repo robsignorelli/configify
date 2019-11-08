@@ -31,6 +31,17 @@ type Source interface {
 	Time(key string) (time.Time, bool)
 }
 
+// SourceWatcher defines a Source that can be dynamically updated at runtime. Not all sources support
+// this. For those that do, you can trigger some logic to fire when we detect a modification to the key
+// value store so you can update your application as needed. Oftentimes, you'll just re-bind a struct
+// that you initialized during the setup phase of your program. Other times that config value has already
+// been used to set up some other component, so you can use this to re-initialize that component w/
+// the new config.
+type SourceWatcher interface {
+	Source
+	Watch(callback func(source Source))
+}
+
 // Options encapsulate the standard attributes that are shared by all sources in configify.
 type Options struct {
 	// Namespace is an optional prefix for all of your config values. This is useful for cases

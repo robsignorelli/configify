@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+// Environment creates a new config source that pull environment variables to provide configuration
+// values. This source will also try to best-guess parse things like numbers since they're all
+// natively strings.
 func Environment(options Options) (Source, error) {
 	if options.Defaults == nil {
 		options.Defaults = Defaults{}

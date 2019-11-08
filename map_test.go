@@ -1,6 +1,7 @@
 package configify_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -8,16 +9,16 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-func TestFixedSuite(t *testing.T) {
-	suite.Run(t, new(FixedSuite))
+func TestMapSuite(t *testing.T) {
+	suite.Run(t, new(MapSuite))
 }
 
-type FixedSuite struct {
+type MapSuite struct {
 	SourceSuite
 }
 
-func (suite *FixedSuite) SetupSuite() {
-	suite.source = configify.Fixed(configify.Values{
+func (suite *MapSuite) SetupSuite() {
+	suite.source = configify.Map(configify.Values{
 		"EMPTY":              "",
 		"STRING":             "foo",
 		"STRING_SPACE":       "  foo bar ",
@@ -47,7 +48,7 @@ func (suite *FixedSuite) SetupSuite() {
 	})
 }
 
-func (suite FixedSuite) TestString() {
+func (suite MapSuite) TestString() {
 	suite.ExpectString("NOT_FOUND", "", false)
 	suite.ExpectString("EMPTY", "", true)
 	suite.ExpectString("STRING", "foo", true)
@@ -59,7 +60,7 @@ func (suite FixedSuite) TestString() {
 	suite.ExpectString("FLOAT64", "", false)
 }
 
-func (suite FixedSuite) TestStringSlice() {
+func (suite MapSuite) TestStringSlice() {
 	suite.ExpectStringSlice("NOT_FOUND", []string{}, false)
 	suite.ExpectStringSlice("STRING_SLICE", []string{"foo", "bar", "baz", "5"}, true)
 	suite.ExpectStringSlice("STRING_SLICE_EMPTY", []string{}, true)
@@ -74,7 +75,7 @@ func (suite FixedSuite) TestStringSlice() {
 	suite.ExpectStringSlice("FLOAT64", []string{}, false)
 }
 
-func (suite FixedSuite) TestInt() {
+func (suite MapSuite) TestInt() {
 	suite.ExpectInt("NOT_FOUND", 0, false)
 	suite.ExpectInt("INT", 5, true)
 	suite.ExpectInt("LARGE_INT", 5300123, true)
@@ -87,7 +88,7 @@ func (suite FixedSuite) TestInt() {
 	suite.ExpectInt("UINT", 0, false)
 }
 
-func (suite FixedSuite) TestInt8() {
+func (suite MapSuite) TestInt8() {
 	suite.ExpectInt8("NOT_FOUND", int8(0), false)
 	suite.ExpectInt8("INT8", int8(8), true)
 
@@ -101,7 +102,7 @@ func (suite FixedSuite) TestInt8() {
 	suite.ExpectInt8("FLOAT64", int8(0), false)
 }
 
-func (suite FixedSuite) TestInt16() {
+func (suite MapSuite) TestInt16() {
 	suite.ExpectInt16("NOT_FOUND", int16(0), false)
 	suite.ExpectInt16("INT16", int16(16), true)
 
@@ -115,7 +116,7 @@ func (suite FixedSuite) TestInt16() {
 	suite.ExpectInt16("FLOAT64", int16(0), false)
 }
 
-func (suite FixedSuite) TestInt32() {
+func (suite MapSuite) TestInt32() {
 	suite.ExpectInt32("NOT_FOUND", int32(0), false)
 	suite.ExpectInt32("INT32", int32(32), true)
 
@@ -129,7 +130,7 @@ func (suite FixedSuite) TestInt32() {
 	suite.ExpectInt32("FLOAT64", int32(0), false)
 }
 
-func (suite FixedSuite) TestInt64() {
+func (suite MapSuite) TestInt64() {
 	suite.ExpectInt64("NOT_FOUND", int64(0), false)
 	suite.ExpectInt64("INT64", int64(64), true)
 
@@ -143,7 +144,7 @@ func (suite FixedSuite) TestInt64() {
 	suite.ExpectInt64("FLOAT64", int64(0), false)
 }
 
-func (suite FixedSuite) TestUint() {
+func (suite MapSuite) TestUint() {
 	suite.ExpectUint("NOT_FOUND", uint(0), false)
 	suite.ExpectUint("UINT", uint(5), true)
 
@@ -157,7 +158,7 @@ func (suite FixedSuite) TestUint() {
 	suite.ExpectUint("FLOAT64", uint(0), false)
 }
 
-func (suite FixedSuite) TestUint8() {
+func (suite MapSuite) TestUint8() {
 	suite.ExpectUint8("NOT_FOUND", uint8(0), false)
 	suite.ExpectUint8("UINT8", uint8(80), true)
 
@@ -171,7 +172,7 @@ func (suite FixedSuite) TestUint8() {
 	suite.ExpectUint8("FLOAT64", uint8(0), false)
 }
 
-func (suite FixedSuite) TestUint16() {
+func (suite MapSuite) TestUint16() {
 	suite.ExpectUint16("NOT_FOUND", uint16(0), false)
 	suite.ExpectUint16("UINT16", uint16(160), true)
 
@@ -185,7 +186,7 @@ func (suite FixedSuite) TestUint16() {
 	suite.ExpectUint16("FLOAT64", uint16(0), false)
 }
 
-func (suite FixedSuite) TestUint32() {
+func (suite MapSuite) TestUint32() {
 	suite.ExpectUint32("NOT_FOUND", uint32(0), false)
 	suite.ExpectUint32("UINT32", uint32(320), true)
 
@@ -199,7 +200,7 @@ func (suite FixedSuite) TestUint32() {
 	suite.ExpectUint32("FLOAT64", uint32(0), false)
 }
 
-func (suite FixedSuite) TestUint64() {
+func (suite MapSuite) TestUint64() {
 	suite.ExpectUint64("NOT_FOUND", uint64(0), false)
 	suite.ExpectUint64("UINT64", uint64(640), true)
 
@@ -213,7 +214,7 @@ func (suite FixedSuite) TestUint64() {
 	suite.ExpectUint64("FLOAT64", uint64(0), false)
 }
 
-func (suite FixedSuite) TestBool() {
+func (suite MapSuite) TestBool() {
 	suite.ExpectBool("NOT_FOUND", false, false)
 	suite.ExpectBool("BOOL_TRUE", true, true)
 	suite.ExpectBool("BOOL_FALSE", false, true)
@@ -225,7 +226,7 @@ func (suite FixedSuite) TestBool() {
 	suite.ExpectBool("UINT8", false, false)
 }
 
-func (suite FixedSuite) TestFloat32() {
+func (suite MapSuite) TestFloat32() {
 	suite.ExpectFloat32("NOT_FOUND", float32(0), false)
 	suite.ExpectFloat32("FLOAT32", float32(2.89), true)
 
@@ -237,7 +238,7 @@ func (suite FixedSuite) TestFloat32() {
 	suite.ExpectFloat32("FLOAT64", float32(0), false)
 }
 
-func (suite FixedSuite) TestFloat64() {
+func (suite MapSuite) TestFloat64() {
 	suite.ExpectFloat64("NOT_FOUND", float64(0), false)
 	suite.ExpectFloat64("FLOAT64", 5.430, true)
 
@@ -248,7 +249,7 @@ func (suite FixedSuite) TestFloat64() {
 	suite.ExpectFloat64("UINT8", float64(0), false)
 }
 
-func (suite FixedSuite) TestDuration() {
+func (suite MapSuite) TestDuration() {
 	suite.ExpectDuration("NOT_FOUND", time.Duration(0), false)
 	suite.ExpectDuration("DURATION", 5*time.Minute, true)
 
@@ -262,7 +263,7 @@ func (suite FixedSuite) TestDuration() {
 	suite.ExpectDuration("FLOAT64", time.Duration(0), false)
 }
 
-func (suite FixedSuite) TestTime() {
+func (suite MapSuite) TestTime() {
 	suite.ExpectTime("NOT_FOUND", time.Time{}, false)
 	suite.ExpectTime("TIME", time.Date(2019, time.December, 25, 8, 33, 40, 0, time.UTC), true)
 
@@ -275,4 +276,39 @@ func (suite FixedSuite) TestTime() {
 	suite.ExpectTime("NEGATIVE", time.Time{}, false)
 	suite.ExpectTime("FLOAT64", time.Time{}, false)
 	suite.ExpectTime("DURATION", time.Time{}, false)
+}
+
+func ExampleMap() {
+	// Since you have full control over the values, be sure to strongly-type them
+	// to the types you expect to get out. For instance if you plan to grab the
+	// key "FOO" as a uint8, then put it in the values map as a uint8, not a plain
+	// old int.
+	config := configify.Map(configify.Values{
+		"HOST":    "localhost",
+		"PORT":    uint16(1234),
+		"TIMEOUT": 20 * time.Second,
+		"THINGS":  []string{"foo", "bar", "baz"},
+	})
+
+	host, ok := config.String("HOST")
+	fmt.Printf("Host:    [%s] (%v)\n", host, ok)
+
+	port, ok := config.Uint16("PORT")
+	fmt.Printf("Port:    [%d] (%v)\n", port, ok)
+
+	timeout, ok := config.Duration("TIMEOUT")
+	fmt.Printf("Timeout: [%d] (%v)\n", timeout, ok)
+
+	things, ok := config.StringSlice("THINGS")
+	fmt.Printf("Things:  [%v] (%v)\n", things, ok)
+
+	// The ok value is false for things not in your value map.
+	foo, ok := config.String("FOO")
+	fmt.Printf("Foo:     [%s] (%v)\n", foo, ok)
+
+	// Output: Host:    [localhost] (true)
+	// Port:    [1234] (true)
+	// Timeout: [20000000000] (true)
+	// Things:  [[foo bar baz]] (true)
+	// Foo:     [] (false)
 }

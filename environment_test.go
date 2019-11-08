@@ -1,6 +1,7 @@
 package configify_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -361,4 +362,92 @@ func (suite EnvironmentSuite) TestDefaults() {
 	suite.ExpectUint("UINT", uint(90), true)
 	suite.ExpectUint("UINT_MOCK", uint(9), true)
 	suite.ExpectUint("UINT_XXX", uint(0), false)
+}
+
+func ExampleEnvironment() {
+	// Obviously, these would be normally applied by whatever you're using
+	// for orchestration.
+	_ = os.Setenv("HELLO_HOST", "localhost")
+	_ = os.Setenv("HELLO_PORT", "8080")
+	_ = os.Setenv("HELLO_TIMEOUT", "20s")
+
+	// Use the namespace "HELLO" because it's the common prefix for all
+	// of our environment variables. By default, we'll use "_" as the delimiter.
+	config, err := configify.Environment(configify.Options{
+		Namespace: configify.Namespace{Name: "HELLO"},
+	})
+	if err != nil {
+		panic("Aww nuts...")
+	}
+
+	// Each value fetch gives you the parsed value as well as an 'ok'
+	// as to whether the value actually existed in the source or not.
+	host, ok := config.String("HOST")
+	fmt.Printf("Host:    [%s] (%v)\n", host, ok)
+
+	port, ok := config.Uint16("PORT")
+	fmt.Printf("Port:    [%d] (%v)\n", port, ok)
+
+	timeout, ok := config.Duration("TIMEOUT")
+	fmt.Printf("Timeout: [%d] (%v)\n", timeout, ok)
+
+	// The ok value is false for things not in your environment.
+	foo, ok := config.String("FOO")
+	fmt.Printf("Foo:     [%s] (%v)\n", foo, ok)
+
+	// Output: Host:    [localhost] (true)
+	// Port:    [8080] (true)
+	// Timeout: [20000000000] (true)
+	// Foo:     [] (false)
+}
+
+func ExampleEnvironmentDefaults() {
+	// Obviously, these would be normally applied by whatever you're using
+	// for orchestration.
+	_ = os.Setenv("HELLO_HOST", "localhost")
+	_ = os.Setenv("HELLO_PORT", "8080")
+	_ = os.Setenv("HELLO_TIMEOUT", "20s")
+
+	// Define default values to fall back to if the environment doesn't define them.
+	defaults := configify.Map(configify.Values{
+		"PORT": 9999,
+		"FOO":  "foo value",
+		"BAR":  "bar value",
+	})
+
+	// Use that fixed map source as the defaults for the environment source.
+	config, err := configify.Environment(configify.Options{
+		Namespace: configify.Namespace{Name: "HELLO"},
+		Defaults:  defaults,
+	})
+	if err != nil {
+		panic("Aww nuts...")
+	}
+
+	host, ok := config.String("HOST")
+	fmt.Printf("Host:    [%s] (%v)\n", host, ok)
+
+	// We'll use the environment value not the default (i.e. 8080, not 9999)
+	port, ok := config.Uint16("PORT")
+	fmt.Printf("Port:    [%d] (%v)\n", port, ok)
+
+	timeout, ok := config.Duration("TIMEOUT")
+	fmt.Printf("Timeout: [%d] (%v)\n", timeout, ok)
+
+	// These two will use the fallback defaults. Note that 'ok' is true, not false!
+	foo, ok := config.String("FOO")
+	fmt.Printf("Foo:     [%s] (%v)\n", foo, ok)
+	bar, ok := config.String("BAR")
+	fmt.Printf("Bar:     [%s] (%v)\n", bar, ok)
+
+	// But neither has "BAZ", so this will still be the natural default for a string
+	baz, ok := config.String("BAZ")
+	fmt.Printf("Baz:     [%s] (%v)\n", baz, ok)
+
+	// Output: Host:    [localhost] (true)
+	// Port:    [8080] (true)
+	// Timeout: [20000000000] (true)
+	// Foo:     [foo value] (true)
+	// Bar:     [bar value] (true)
+	// Baz:     [] (false)
 }

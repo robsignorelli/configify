@@ -423,7 +423,7 @@ func ExampleNewBinder() {
 		Port   int
 		Labels []string `conf:"TAGS"`
 	}{}
-	source := configify.Fixed(configify.Values{
+	source := configify.Map(configify.Values{
 		"HOST": "localhost",
 		"PORT": 1234,
 		"TAGS": []string{"a", "b", "c"},

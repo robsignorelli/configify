@@ -7,6 +7,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+// NewMockSource creates a mock source that lets you instruct it exactly how to
+// respond for specific inputs.
 func NewMockSource(setup func(*MockSource)) configify.Source {
 	// We call setup() before using `mock.Anything` so that testify will try to apply those
 	// matchers first on invocation. So the stuff you set up takes precedence over these defaults.
