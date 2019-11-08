@@ -21,14 +21,14 @@ type Binder interface {
 // the struct you want to populate.
 func NewBinder(source Source) Binder {
 	return &standardBinder{
-		Source:   source,
-		Defaults: Defaults{},
+		Source:      source,
+		emptySource: emptySource{},
 	}
 }
 
 type standardBinder struct {
 	Source
-	Defaults
+	emptySource
 }
 
 func (b standardBinder) Bind(out interface{}) {

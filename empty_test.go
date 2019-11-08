@@ -17,7 +17,7 @@ type DefaultSuite struct {
 }
 
 func (suite DefaultSuite) TestAll() {
-	suite.source = configify.Defaults{}
+	suite.source = configify.Empty()
 	options := suite.source.Options()
 	suite.Equal("", options.Namespace.Name)
 	suite.Equal("", options.Namespace.Delimiter)

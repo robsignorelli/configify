@@ -12,7 +12,7 @@ import (
 // natively strings.
 func Environment(options Options) (Source, error) {
 	if options.Defaults == nil {
-		options.Defaults = Defaults{}
+		options.Defaults = emptySource{}
 	}
 	return &environmentSource{options: options}, nil
 }
