@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/robsignorelli/configify"
+	"github.com/robsignorelli/configify/configifytest"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -15,7 +16,7 @@ func TestEnvironmentSuite(t *testing.T) {
 }
 
 type EnvironmentSuite struct {
-	SourceSuite
+	configifytest.SourceSuite
 }
 
 func (suite *EnvironmentSuite) SetupSuite() {
@@ -55,7 +56,7 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("FOO_STRING", "foo")
 	suite.set("FOO_INT", "5")
 
-	suite.source, _ = configify.Environment(configify.Options{
+	suite.Source, _ = configify.Environment(configify.Options{
 		Namespace: configify.Namespace{Name: "TEST"},
 	})
 }
@@ -331,7 +332,7 @@ func (suite EnvironmentSuite) TestTime() {
 }
 
 func (suite EnvironmentSuite) TestDefaults() {
-	def := NewMockSource(func(s *MockSource) {
+	def := configifytest.NewMockSource(func(s *configifytest.MockSource) {
 		s.On("String", "STRING_MOCK").Return("asdf", true)
 		s.On("StringSlice", "STRING_SLICE_MOCK").Return([]string{"a", "b"}, true)
 		s.On("Int", "INT_MOCK").Return(8, true)
@@ -339,7 +340,7 @@ func (suite EnvironmentSuite) TestDefaults() {
 	})
 
 	var err error
-	suite.source, err = configify.Environment(configify.Options{
+	suite.Source, err = configify.Environment(configify.Options{
 		Namespace: configify.Namespace{Name: "TEST"},
 		Defaults:  def,
 	})

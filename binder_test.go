@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/robsignorelli/configify"
+	"github.com/robsignorelli/configify/configifytest"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -14,7 +15,7 @@ func TestBinderSuite(t *testing.T) {
 }
 
 type BinderSuite struct {
-	SourceSuite
+	configifytest.SourceSuite
 }
 
 type TestStruct struct {
@@ -168,7 +169,7 @@ func (suite BinderSuite) TestModelBinder_NilSource() {
 // up and a source that will never return valid values leaves the input alone.
 func (suite BinderSuite) TestModelBinder_NoDefaults() {
 	input := TestStruct{}
-	source := NewMockSource(func(source *MockSource) {})
+	source := configifytest.NewMockSource(func(source *configifytest.MockSource) {})
 	configify.NewBinder(source).Bind(&input)
 
 	suite.Equal("", input.String)
@@ -216,7 +217,7 @@ func (suite BinderSuite) TestModelBinder_NoDefaults() {
 // with no overrides leaves the input alone. It should have all the same values it came in with.
 func (suite BinderSuite) TestModelBinder_KeepDefaults() {
 	input := suite.populateTestStruct()
-	source := NewMockSource(func(source *MockSource) {})
+	source := configifytest.NewMockSource(func(source *configifytest.MockSource) {})
 	configify.NewBinder(source).Bind(&input)
 
 	suite.Equal("A", input.String)
@@ -283,7 +284,7 @@ func (suite BinderSuite) TestModelBinder_KeepDefaults() {
 // are found within the source. This will also ensure that all of the necessary
 func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 	input := suite.populateTestStruct()
-	source := NewMockSource(func(source *MockSource) {
+	source := configifytest.NewMockSource(func(source *configifytest.MockSource) {
 		source.On("String", "STRING").Return("New-A", true)
 		source.On("String", "STRING2").Return("New-B", true)
 		source.On("String", "STRING_VALUE").Return("New-C", true)
