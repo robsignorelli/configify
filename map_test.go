@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/robsignorelli/configify"
+	"github.com/robsignorelli/configify/configifytest"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -14,11 +15,11 @@ func TestMapSuite(t *testing.T) {
 }
 
 type MapSuite struct {
-	SourceSuite
+	configifytest.SourceSuite
 }
 
 func (suite *MapSuite) SetupSuite() {
-	suite.source = configify.Map(configify.Values{
+	suite.Source = configify.Map(configify.Values{
 		"EMPTY":              "",
 		"STRING":             "foo",
 		"STRING_SPACE":       "  foo bar ",

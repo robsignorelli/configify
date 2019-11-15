@@ -1,4 +1,4 @@
-package configify_test
+package configifytest
 
 import (
 	"time"

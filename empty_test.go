@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/robsignorelli/configify"
+	"github.com/robsignorelli/configify/configifytest"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -13,12 +14,12 @@ func TestDefaultSuite(t *testing.T) {
 }
 
 type DefaultSuite struct {
-	SourceSuite
+	configifytest.SourceSuite
 }
 
 func (suite DefaultSuite) TestAll() {
-	suite.source = configify.Empty()
-	options := suite.source.Options()
+	suite.Source = configify.Empty()
+	options := suite.Source.Options()
 	suite.Equal("", options.Namespace.Name)
 	suite.Equal("", options.Namespace.Delimiter)
 	suite.Nil(options.Defaults)
