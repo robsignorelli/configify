@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/robsignorelli/configify"
+	"github.com/robsignorelli/configify/configifytest"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -15,7 +16,7 @@ func TestEnvironmentSuite(t *testing.T) {
 }
 
 type EnvironmentSuite struct {
-	SourceSuite
+	configifytest.SourceSuite
 }
 
 func (suite *EnvironmentSuite) SetupSuite() {

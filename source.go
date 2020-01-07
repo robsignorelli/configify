@@ -1,6 +1,7 @@
 package configify
 
 import (
+	"context"
 	"strings"
 	"time"
 )
@@ -84,6 +85,11 @@ type Options struct {
 	// environments shared with other processes/services/components that might have their own
 	// similarly named variables.
 	Namespace namespace
+
+	// Context is utilized by only certain Source implementations that need to manage connections
+	// or timeouts. You can send a Done signal to the context to tell the source that it should
+	// close its connections and/or stop reading data from the underlying data source.
+	Context context.Context
 
 	// Defaults is an optional "fallback" for values when the source you're creating does not
 	// contain the requested value. For instance if your source has values for "FOO" and "BAR"
