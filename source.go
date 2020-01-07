@@ -42,6 +42,37 @@ type SourceWatcher interface {
 	Watch(callback func(source Source))
 }
 
+// Option defines a functional option setting you can utilize when configuring a new source.
+type Option func(*Options)
+
+// Defaults applies the following fallback values to the source you're creating.
+func Defaults(values Values) Option {
+	return func(options *Options) {
+		options.Defaults = Map(values)
+	}
+}
+
+// Namespace defines a prefix to apply to all value lookups.
+func Namespace(name string) Option {
+	return func(options *Options) {
+		options.Namespace.Name = name
+	}
+}
+
+// NamespaceDelim defines the separator used when joining namespaces and their keys. Defaults to "_".
+func NamespaceDelim(delimiter string) Option {
+	return func(options *Options) {
+		options.Namespace.Delimiter = delimiter
+	}
+}
+
+func apply(options []Option, defaults *Options) *Options {
+	for _, option := range options {
+		option(defaults)
+	}
+	return defaults
+}
+
 // Options encapsulate the standard attributes that are shared by all sources in configify.
 type Options struct {
 	// Namespace is an optional prefix for all of your config values. This is useful for cases
@@ -53,7 +84,7 @@ type Options struct {
 	// This helps you enforce good variable naming practices especially when running in
 	// environments shared with other processes/services/components that might have their own
 	// similarly named variables.
-	Namespace Namespace
+	Namespace namespace
 
 	// Context is utilized by only certain Source implementations that need to manage connections
 	// or timeouts. You can send a Done signal to the context to tell the source that it should
@@ -68,18 +99,18 @@ type Options struct {
 	Defaults Source
 }
 
-// Namespace defines a fixed prefix for keys in your config store. This helps you isolate your
+// namespace defines a fixed prefix for keys in your config store. This helps you isolate your
 // config values to certain services or components. For instance for all HTTP router configuration
 // you can use the namespace "HTTP" or for the configs for your RabbitMQ component, you can use
 // the namespace "RABBITMQ", and so on.
-type Namespace struct {
+type namespace struct {
 	Name      string
 	Delimiter string
 }
 
 // Qualify takes the raw, unqualified key name (e.g. "PORT") and returns the namespace-qualified
 // key name (e.g. "HTTP_PORT").
-func (ns Namespace) Qualify(key string) string {
+func (ns namespace) Qualify(key string) string {
 	if ns.Name == "" {
 		return key
 	}
@@ -89,7 +120,7 @@ func (ns Namespace) Qualify(key string) string {
 // Join constructs a well-formed value by joining the given segments, ignoring any empty "". This
 // will ensure that there are no consecutive delimiters or leading/trailing ones. This does NOT
 // force the namespace name as a prefix!
-func (ns Namespace) Join(segments ...string) string {
+func (ns namespace) Join(segments ...string) string {
 	delim := strings.TrimSpace(ns.Delimiter)
 	if delim == "" {
 		delim = "_"

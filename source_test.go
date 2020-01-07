@@ -16,15 +16,20 @@ type NamespaceSuite struct {
 }
 
 func (suite NamespaceSuite) TestNamespace_Qualify() {
-	ns := configify.Namespace{}
-	suite.Equal("BAR", ns.Qualify("BAR"))
+	options := configify.Options{}
+	suite.Equal("BAR", options.Namespace.Qualify("BAR"))
 
-	ns = configify.Namespace{Name: "FOO"}
-	suite.Equal("FOO_BAR", ns.Qualify("BAR"))
+	options = configify.Options{}
+	configify.Namespace("FOO")(&options)
+	suite.Equal("FOO_BAR", options.Namespace.Qualify("BAR"))
 
-	ns = configify.Namespace{Name: "FOO", Delimiter: "."}
-	suite.Equal("FOO.BAR", ns.Qualify("BAR"))
+	options = configify.Options{}
+	configify.Namespace("FOO")(&options)
+	configify.NamespaceDelim(".")(&options)
+	suite.Equal("FOO.BAR", options.Namespace.Qualify("BAR"))
 
-	ns = configify.Namespace{Name: "FOO  ", Delimiter: "  .  "}
-	suite.Equal("FOO.BAR", ns.Qualify("BAR"))
+	options = configify.Options{}
+	configify.Namespace("FOO")(&options)
+	configify.NamespaceDelim("  .  ")(&options)
+	suite.Equal("FOO.BAR", options.Namespace.Qualify("BAR"))
 }

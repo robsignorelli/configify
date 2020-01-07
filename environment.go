@@ -9,11 +9,11 @@ import (
 // Environment creates a new config source that pull environment variables to provide configuration
 // values. This source will also try to best-guess parse things like numbers since they're all
 // natively strings.
-func Environment(options Options) (Source, error) {
-	if options.Defaults == nil {
-		options.Defaults = emptySource{}
-	}
-	return &environmentSource{options: options, massage: Massage{}}, nil
+func Environment(opts ...Option) (Source, error) {
+	options := apply(opts, &Options{
+		Defaults: emptySource{},
+	})
+	return &environmentSource{options: *options, massage: Massage{}}, nil
 }
 
 type environmentSource struct {
