@@ -25,7 +25,7 @@ go get github.com/robsignorelli/configify
 In order to fetch config values, you need to create a `Source`. Different
 sources interact with different types of key/value stores. 
 
-```
+```go
 import (
 	"github.com/robsignorelli/configify"
 )
@@ -34,7 +34,7 @@ func main() {
 	// The 'ok' return value indicates whether we found that value in the
 	// source or not. For instance, is "DEBUG_MODE" false because it wasn't
 	// in the environment or did you explicitly set it to "false"?
-	env, ok := configify.Environment(configify.Options{})
+	env, ok := configify.Environment()
 	host, ok := env.String("HTTP_HOST")
 	port, ok := env.Uint("HTTP_PORT")
 	debugMode, ok := env.Bool("DEBUG_MODE")
@@ -66,7 +66,7 @@ func main() {
 	// DEBUG_MODE=true
 	// LABELS=foo,bar,baz
 
-	env := configify.Environment(configify.Options{})
+	env := configify.Environment()
 	binder := configify.NewBinder(env)
 
 	// You can provide starting values and the binder will only replace
@@ -90,8 +90,8 @@ func main() {
  
 It's quite common to want to have your Source fall back to a known
 default when it does not contain an explicit value for your key. The `Map`
-source can be used to provide hard-coded fallback values.
-
+source can be used to provide hard-coded fallback values. You can use configify's
+functional options to apply them.
 
 ```
 func main() {
@@ -100,14 +100,12 @@ func main() {
 	// DEBUG_MODE=true
 	// LABELS=foo,bar,baz
 
-	defaults := configify.Map(configify.Values{
-		"HTTP_HOST": "google.com"
-		"HTTP_PORT": 9999,
-		"LABELS":    []string{"a", "b", "c"}
-	})
-	env := configify.Environment(configify.Options{
-		Defaults: defaults
-	})
+	env := configify.Environment(
+		configify.Defaults(configify.Values{
+        	"HTTP_HOST": "google.com"
+			"HTTP_PORT": 9999,
+			"LABELS":    []string{"a", "b", "c"}
+		}))
 
 	// "google.com" 
 	host, ok := env.String("HTTP_HOST")
@@ -136,13 +134,8 @@ func main() {
 	// HELLO_DEBUG_MODE=true
 	// GOODBYE_HTTP_HOST=goodbye.example.com
 
-	// I'm being explicit, but you can leave off `Delimiter: "_"` because that's the
-	// default delimiter already when defining a namespace. 
-	env := configify.Environment(configify.Options{
-		Namespace: configify.Namespace{Name: "HELLO", Delimiter: "_"})
-	})
-
 	// When you request values, simply provide the unqualified key name
+	env := configify.Environment(configify.Namespace("HELLO"))
 
 	// "hello.example.com"
 	host, ok := env.String("HTTP_HOST")
