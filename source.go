@@ -51,10 +51,17 @@ func Defaults(values Values) Option {
 	}
 }
 
-// WithNamespace defines a prefix to apply to all value lookups.
-func WithNamespace(name, delimiter string) Option {
+// Namespace defines a prefix to apply to all value lookups.
+func Namespace(name string) Option {
 	return func(options *Options) {
-		options.Namespace = Namespace{Name: name, Delimiter: delimiter}
+		options.Namespace.Name = name
+	}
+}
+
+// NamespaceDelim defines the separator used when joining namespaces and their keys. Defaults to "_".
+func NamespaceDelim(delimiter string) Option {
+	return func(options *Options) {
+		options.Namespace.Delimiter = delimiter
 	}
 }
 
@@ -76,7 +83,7 @@ type Options struct {
 	// This helps you enforce good variable naming practices especially when running in
 	// environments shared with other processes/services/components that might have their own
 	// similarly named variables.
-	Namespace Namespace
+	Namespace namespace
 
 	// Defaults is an optional "fallback" for values when the source you're creating does not
 	// contain the requested value. For instance if your source has values for "FOO" and "BAR"
@@ -86,18 +93,18 @@ type Options struct {
 	Defaults Source
 }
 
-// Namespace defines a fixed prefix for keys in your config store. This helps you isolate your
+// namespace defines a fixed prefix for keys in your config store. This helps you isolate your
 // config values to certain services or components. For instance for all HTTP router configuration
 // you can use the namespace "HTTP" or for the configs for your RabbitMQ component, you can use
 // the namespace "RABBITMQ", and so on.
-type Namespace struct {
+type namespace struct {
 	Name      string
 	Delimiter string
 }
 
 // Qualify takes the raw, unqualified key name (e.g. "PORT") and returns the namespace-qualified
 // key name (e.g. "HTTP_PORT").
-func (ns Namespace) Qualify(key string) string {
+func (ns namespace) Qualify(key string) string {
 	if ns.Name == "" {
 		return key
 	}
@@ -107,7 +114,7 @@ func (ns Namespace) Qualify(key string) string {
 // Join constructs a well-formed value by joining the given segments, ignoring any empty "". This
 // will ensure that there are no consecutive delimiters or leading/trailing ones. This does NOT
 // force the namespace name as a prefix!
-func (ns Namespace) Join(segments ...string) string {
+func (ns namespace) Join(segments ...string) string {
 	delim := strings.TrimSpace(ns.Delimiter)
 	if delim == "" {
 		delim = "_"

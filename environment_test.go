@@ -55,7 +55,7 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("FOO_STRING", "foo")
 	suite.set("FOO_INT", "5")
 
-	suite.source, _ = configify.Environment(configify.WithNamespace("TEST", "_"))
+	suite.source, _ = configify.Environment(configify.Namespace("TEST"))
 }
 
 func (suite EnvironmentSuite) set(key string, value string) {
@@ -66,15 +66,22 @@ func (suite EnvironmentSuite) TestFactory() {
 	_, err := configify.Environment()
 	suite.NoError(err)
 
-	_, err = configify.Environment(configify.WithNamespace("", ""))
+	_, err = configify.Environment(
+		configify.Namespace(""),
+		configify.NamespaceDelim(""))
 	suite.NoError(err)
 
-	_, err = configify.Environment(configify.WithNamespace("FOO", "."))
+	_, err = configify.Environment(
+		configify.Namespace("FOO"),
+		configify.NamespaceDelim("."))
 	suite.NoError(err)
 }
 
 func (suite EnvironmentSuite) TestOptions() {
-	source, _ := configify.Environment(configify.WithNamespace("FOO", "."))
+	source, _ := configify.Environment(
+		configify.Namespace("FOO"),
+		configify.NamespaceDelim("."))
+
 	suite.Equal("FOO", source.Options().Namespace.Name)
 	suite.Equal(".", source.Options().Namespace.Delimiter)
 }
@@ -322,7 +329,7 @@ func (suite EnvironmentSuite) TestTime() {
 func (suite EnvironmentSuite) TestDefaults() {
 	var err error
 	suite.source, err = configify.Environment(
-		configify.WithNamespace("TEST", "_"),
+		configify.Namespace("TEST"),
 		configify.Defaults(configify.Values{
 			"STRING_MOCK":       "asdf",
 			"STRING_SLICE_MOCK": []string{"a", "b"},
@@ -359,7 +366,7 @@ func ExampleEnvironment() {
 
 	// Use the namespace "HELLO" because it's the common prefix for all
 	// of our environment variables. By default, we'll use "_" as the delimiter.
-	config, err := configify.Environment(configify.WithNamespace("HELLO", "_"))
+	config, err := configify.Environment(configify.Namespace("HELLO"))
 	if err != nil {
 		panic("Aww nuts...")
 	}
@@ -394,7 +401,7 @@ func ExampleEnvironmentDefaults() {
 
 	// Use that fixed map source as the defaults for the environment source.
 	config, err := configify.Environment(
-		configify.WithNamespace("HELLO", "_"),
+		configify.Namespace("HELLO"),
 		configify.Defaults(configify.Values{
 			"PORT": 9999,
 			"FOO":  "foo value",
