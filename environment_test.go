@@ -55,9 +55,7 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("FOO_STRING", "foo")
 	suite.set("FOO_INT", "5")
 
-	suite.source, _ = configify.Environment(configify.Options{
-		Namespace: configify.Namespace{Name: "TEST"},
-	})
+	suite.source, _ = configify.Environment(configify.WithNamespace("TEST", "_"))
 }
 
 func (suite EnvironmentSuite) set(key string, value string) {
@@ -65,27 +63,18 @@ func (suite EnvironmentSuite) set(key string, value string) {
 }
 
 func (suite EnvironmentSuite) TestFactory() {
-	_, err := configify.Environment(configify.Options{})
+	_, err := configify.Environment()
 	suite.NoError(err)
 
-	_, err = configify.Environment(configify.Options{Namespace: configify.Namespace{}})
+	_, err = configify.Environment(configify.WithNamespace("", ""))
 	suite.NoError(err)
 
-	_, err = configify.Environment(configify.Options{
-		Namespace: configify.Namespace{Name: "", Delimiter: ""},
-	})
-	suite.NoError(err)
-
-	_, err = configify.Environment(configify.Options{
-		Namespace: configify.Namespace{Name: "FOO", Delimiter: "."},
-	})
+	_, err = configify.Environment(configify.WithNamespace("FOO", "."))
 	suite.NoError(err)
 }
 
 func (suite EnvironmentSuite) TestOptions() {
-	source, _ := configify.Environment(configify.Options{
-		Namespace: configify.Namespace{Name: "FOO", Delimiter: "."},
-	})
+	source, _ := configify.Environment(configify.WithNamespace("FOO", "."))
 	suite.Equal("FOO", source.Options().Namespace.Name)
 	suite.Equal(".", source.Options().Namespace.Delimiter)
 }
@@ -331,18 +320,15 @@ func (suite EnvironmentSuite) TestTime() {
 }
 
 func (suite EnvironmentSuite) TestDefaults() {
-	def := NewMockSource(func(s *MockSource) {
-		s.On("String", "STRING_MOCK").Return("asdf", true)
-		s.On("StringSlice", "STRING_SLICE_MOCK").Return([]string{"a", "b"}, true)
-		s.On("Int", "INT_MOCK").Return(8, true)
-		s.On("Uint", "UINT_MOCK").Return(uint(9), true)
-	})
-
 	var err error
-	suite.source, err = configify.Environment(configify.Options{
-		Namespace: configify.Namespace{Name: "TEST"},
-		Defaults:  def,
-	})
+	suite.source, err = configify.Environment(
+		configify.WithNamespace("TEST", "_"),
+		configify.Defaults(configify.Values{
+			"STRING_MOCK":       "asdf",
+			"STRING_SLICE_MOCK": []string{"a", "b"},
+			"INT_MOCK":          8,
+			"UINT_MOCK":         uint(9),
+		}))
 	suite.Require().NoError(err)
 
 	// For each, make sure that (A) a valid env value resolves, (B) a value in the fixed fallback
@@ -373,9 +359,7 @@ func ExampleEnvironment() {
 
 	// Use the namespace "HELLO" because it's the common prefix for all
 	// of our environment variables. By default, we'll use "_" as the delimiter.
-	config, err := configify.Environment(configify.Options{
-		Namespace: configify.Namespace{Name: "HELLO"},
-	})
+	config, err := configify.Environment(configify.WithNamespace("HELLO", "_"))
 	if err != nil {
 		panic("Aww nuts...")
 	}
@@ -408,18 +392,14 @@ func ExampleEnvironmentDefaults() {
 	_ = os.Setenv("HELLO_PORT", "8080")
 	_ = os.Setenv("HELLO_TIMEOUT", "20s")
 
-	// Define default values to fall back to if the environment doesn't define them.
-	defaults := configify.Map(configify.Values{
-		"PORT": 9999,
-		"FOO":  "foo value",
-		"BAR":  "bar value",
-	})
-
 	// Use that fixed map source as the defaults for the environment source.
-	config, err := configify.Environment(configify.Options{
-		Namespace: configify.Namespace{Name: "HELLO"},
-		Defaults:  defaults,
-	})
+	config, err := configify.Environment(
+		configify.WithNamespace("HELLO", "_"),
+		configify.Defaults(configify.Values{
+			"PORT": 9999,
+			"FOO":  "foo value",
+			"BAR":  "bar value",
+		}))
 	if err != nil {
 		panic("Aww nuts...")
 	}

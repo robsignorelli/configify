@@ -41,6 +41,30 @@ type SourceWatcher interface {
 	Watch(callback func(source Source))
 }
 
+// Option defines a functional option setting you can utilize when configuring a new source.
+type Option func(*Options)
+
+// Defaults applies the following fallback values to the source you're creating.
+func Defaults(values Values) Option {
+	return func(options *Options) {
+		options.Defaults = Map(values)
+	}
+}
+
+// WithNamespace defines a prefix to apply to all value lookups.
+func WithNamespace(name, delimiter string) Option {
+	return func(options *Options) {
+		options.Namespace = Namespace{Name: name, Delimiter: delimiter}
+	}
+}
+
+func apply(options []Option, defaults *Options) *Options {
+	for _, option := range options {
+		option(defaults)
+	}
+	return defaults
+}
+
 // Options encapsulate the standard attributes that are shared by all sources in configify.
 type Options struct {
 	// Namespace is an optional prefix for all of your config values. This is useful for cases
