@@ -15,7 +15,7 @@ type NamespaceSuite struct {
 	suite.Suite
 }
 
-func (suite SourceSuite) TestNamespace_Qualify() {
+func (suite NamespaceSuite) TestNamespace_Qualify() {
 	options := configify.Options{}
 	suite.Equal("BAR", options.Namespace.Qualify("BAR"))
 

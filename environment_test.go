@@ -56,7 +56,7 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("FOO_STRING", "foo")
 	suite.set("FOO_INT", "5")
 
-	suite.source, _ = configify.Environment(configify.Namespace("TEST"))
+	suite.Source, _ = configify.Environment(configify.Namespace("TEST"))
 }
 
 func (suite EnvironmentSuite) set(key string, value string) {
@@ -329,7 +329,7 @@ func (suite EnvironmentSuite) TestTime() {
 
 func (suite EnvironmentSuite) TestDefaults() {
 	var err error
-	suite.source, err = configify.Environment(
+	suite.Source, err = configify.Environment(
 		configify.Namespace("TEST"),
 		configify.Defaults(configify.Values{
 			"STRING_MOCK":       "asdf",
