@@ -35,94 +35,114 @@ func NewMockSource(setup func(*MockSource)) configify.Source {
 	return s
 }
 
+// MockSource is a testing source where you can train the exact values you want to regurgitate
+// without having to have it backed by any "real" implementation.
 type MockSource struct {
 	mock.Mock
 }
 
+// Options returns the trained value for this attribute.
 func (s MockSource) Options() configify.Options {
 	return s.Called().Get(0).(configify.Options)
 }
 
+// String returns the trained value for this config attribute.
 func (s MockSource) String(key string) (string, bool) {
 	args := s.Called(key)
 	return args.Get(0).(string), args.Get(1).(bool)
 }
 
+// StringSlice returns the trained value for this config attribute.
 func (s MockSource) StringSlice(key string) ([]string, bool) {
 	args := s.Called(key)
 	return args.Get(0).([]string), args.Get(1).(bool)
 }
 
+// Int returns the trained value for this config attribute.
 func (s MockSource) Int(key string) (int, bool) {
 	args := s.Called(key)
 	return args.Get(0).(int), args.Get(1).(bool)
 }
 
+// Int8 returns the trained value for this config attribute.
 func (s MockSource) Int8(key string) (int8, bool) {
 	args := s.Called(key)
 	return args.Get(0).(int8), args.Get(1).(bool)
 }
 
+// Int16 returns the trained value for this config attribute.
 func (s MockSource) Int16(key string) (int16, bool) {
 	args := s.Called(key)
 	return args.Get(0).(int16), args.Get(1).(bool)
 }
 
+// Int32 returns the trained value for this config attribute.
 func (s MockSource) Int32(key string) (int32, bool) {
 	args := s.Called(key)
 	return args.Get(0).(int32), args.Get(1).(bool)
 }
 
+// Int64 returns the trained value for this config attribute.
 func (s MockSource) Int64(key string) (int64, bool) {
 	args := s.Called(key)
 	return args.Get(0).(int64), args.Get(1).(bool)
 }
 
+// Uint returns the trained value for this config attribute.
 func (s MockSource) Uint(key string) (uint, bool) {
 	args := s.Called(key)
 	return args.Get(0).(uint), args.Get(1).(bool)
 }
 
+// Uint8 returns the trained value for this config attribute.
 func (s MockSource) Uint8(key string) (uint8, bool) {
 	args := s.Called(key)
 	return args.Get(0).(uint8), args.Get(1).(bool)
 }
 
+// Uint16 returns the trained value for this config attribute.
 func (s MockSource) Uint16(key string) (uint16, bool) {
 	args := s.Called(key)
 	return args.Get(0).(uint16), args.Get(1).(bool)
 }
 
+// Uint32 returns the trained value for this config attribute.
 func (s MockSource) Uint32(key string) (uint32, bool) {
 	args := s.Called(key)
 	return args.Get(0).(uint32), args.Get(1).(bool)
 }
 
+// Uint64 returns the trained value for this config attribute.
 func (s MockSource) Uint64(key string) (uint64, bool) {
 	args := s.Called(key)
 	return args.Get(0).(uint64), args.Get(1).(bool)
 }
 
+// Float32 returns the trained value for this config attribute.
 func (s MockSource) Float32(key string) (float32, bool) {
 	args := s.Called(key)
 	return args.Get(0).(float32), args.Get(1).(bool)
 }
 
+// Float64 returns the trained value for this config attribute.
 func (s MockSource) Float64(key string) (float64, bool) {
 	args := s.Called(key)
 	return args.Get(0).(float64), args.Get(1).(bool)
 }
 
+// Bool returns the trained value for this config attribute.
 func (s MockSource) Bool(key string) (bool, bool) {
 	args := s.Called(key)
 	return args.Get(0).(bool), args.Get(1).(bool)
 }
 
+// Duration returns the trained value for this config attribute.
 func (s MockSource) Duration(key string) (time.Duration, bool) {
 	args := s.Called(key)
 	return args.Get(0).(time.Duration), args.Get(1).(bool)
 }
 
+// Time returns the trained value for this config attribute.
 func (s MockSource) Time(key string) (time.Time, bool) {
 	args := s.Called(key)
 	return args.Get(0).(time.Time), args.Get(1).(bool)

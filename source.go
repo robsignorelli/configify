@@ -66,6 +66,14 @@ func NamespaceDelim(delimiter string) Option {
 	}
 }
 
+// Context applies the specified context to the options. Only certain source implementations will make
+// good use of this, so pay attention to your source's documentation.
+func Context(ctx context.Context) Option {
+	return func(options *Options) {
+		options.Context = ctx
+	}
+}
+
 func apply(options []Option, defaults *Options) *Options {
 	for _, option := range options {
 		option(defaults)
