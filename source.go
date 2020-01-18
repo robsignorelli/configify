@@ -74,6 +74,27 @@ func Context(ctx context.Context) Option {
 	}
 }
 
+// Address applies the specified host/port/etc info to the options when connecting to a remote Source.
+func Address(address string) Option {
+	return func(options *Options) {
+		options.Address = address
+	}
+}
+
+// Username applies the specified credentials identifier to the options when connecting to a Source.
+func Username(username string) Option {
+	return func(options *Options) {
+		options.Username = username
+	}
+}
+
+// Password applies the specified credentials secret to the options when connecting to a Source.
+func Password(password string) Option {
+	return func(options *Options) {
+		options.Password = password
+	}
+}
+
 func apply(options []Option, defaults *Options) *Options {
 	for _, option := range options {
 		option(defaults)
@@ -105,6 +126,20 @@ type Options struct {
 	// what we should return as the default value. If you don't supply this, all defaults will
 	// simply match sane defaults for the type (e.g. "" for strings, 0 for ints, etc)
 	Defaults Source
+
+	// Address is only used by some implementations of Source that need to connect to some remote
+	// host/store. It Encodes all of the protocol/host/port info that the client requires.
+	Address string
+
+	// Username is only used by implementations of Source that potentially require authentication in
+	// order to access the key/value store. While it's called Username, it could be any sort of
+	// identifier used in credentials.
+	Username string
+
+	// Password is only used by implementations of Source that potentially require authentication in
+	// order to access the key/value store. While it's called Password, it could be any sort of
+	// secret used in credentials.
+	Password string
 }
 
 // namespace defines a fixed prefix for keys in your config store. This helps you isolate your
