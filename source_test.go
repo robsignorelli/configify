@@ -3,6 +3,7 @@ package configify_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/robsignorelli/configify"
 	"github.com/stretchr/testify/suite"
@@ -93,4 +94,22 @@ func (suite OptionsSuite) TestAddress() {
 	options = configify.Options{}
 	configify.Address(" foo ! bar#.")(&options)
 	suite.Equal(" foo ! bar#.", options.Address) // doesn't require a "host:port" format
+}
+
+func (suite OptionsSuite) TestRefreshInterval() {
+	options := configify.Options{}
+	suite.Empty(options.Address)
+
+	options = configify.Options{}
+	configify.RefreshInterval(0 * time.Second)(&options)
+	suite.Equal(0*time.Second, options.RefreshInterval)
+
+	options = configify.Options{}
+	configify.RefreshInterval(5 * time.Second)(&options)
+	suite.Equal(5*time.Second, options.RefreshInterval)
+
+	// This option does not allow negative values.
+	options = configify.Options{}
+	configify.RefreshInterval(-5 * time.Second)(&options)
+	suite.Equal(0*time.Second, options.RefreshInterval)
 }

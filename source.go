@@ -95,6 +95,16 @@ func Password(password string) Option {
 	}
 }
 
+// RefreshInterval indicates how often this source should check for updates to the config values that were
+// most recently loaded.
+func RefreshInterval(interval time.Duration) Option {
+	return func(options *Options) {
+		if interval > 0 {
+			options.RefreshInterval = interval
+		}
+	}
+}
+
 func apply(options []Option, defaults *Options) *Options {
 	for _, option := range options {
 		option(defaults)
@@ -140,6 +150,10 @@ type Options struct {
 	// order to access the key/value store. While it's called Password, it could be any sort of
 	// secret used in credentials.
 	Password string
+
+	// RefreshInterval, for implementations that support it, indicates how frequently you want the
+	// underlying source to check for modifications.
+	RefreshInterval time.Duration
 }
 
 // namespace defines a fixed prefix for keys in your config store. This helps you isolate your
