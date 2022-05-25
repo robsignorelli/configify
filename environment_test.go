@@ -56,30 +56,15 @@ func (suite *EnvironmentSuite) SetupSuite() {
 	suite.set("FOO_STRING", "foo")
 	suite.set("FOO_INT", "5")
 
-	suite.Source, _ = configify.Environment(configify.Namespace("TEST"))
+	suite.Source = configify.Environment(configify.Namespace("TEST"))
 }
 
 func (suite EnvironmentSuite) set(key string, value string) {
 	_ = os.Setenv(key, value)
 }
 
-func (suite EnvironmentSuite) TestFactory() {
-	_, err := configify.Environment()
-	suite.NoError(err)
-
-	_, err = configify.Environment(
-		configify.Namespace(""),
-		configify.NamespaceDelim(""))
-	suite.NoError(err)
-
-	_, err = configify.Environment(
-		configify.Namespace("FOO"),
-		configify.NamespaceDelim("."))
-	suite.NoError(err)
-}
-
 func (suite EnvironmentSuite) TestOptions() {
-	source, _ := configify.Environment(
+	source := configify.Environment(
 		configify.Namespace("FOO"),
 		configify.NamespaceDelim("."))
 
@@ -328,8 +313,7 @@ func (suite EnvironmentSuite) TestTime() {
 }
 
 func (suite EnvironmentSuite) TestDefaults() {
-	var err error
-	suite.Source, err = configify.Environment(
+	suite.Source = configify.Environment(
 		configify.Namespace("TEST"),
 		configify.Defaults(configify.Values{
 			"STRING_MOCK":       "asdf",
@@ -337,7 +321,6 @@ func (suite EnvironmentSuite) TestDefaults() {
 			"INT_MOCK":          8,
 			"UINT_MOCK":         uint(9),
 		}))
-	suite.Require().NoError(err)
 
 	// For each, make sure that (A) a valid env value resolves, (B) a value in the fixed fallback
 	// resolves, and (C) a value that doesn't exist in either uses the hard-coded defaults.
@@ -367,13 +350,10 @@ func ExampleEnvironment() {
 
 	// Use the namespace "HELLO" because it's the common prefix for all
 	// of our environment variables. By default, we'll use "_" as the delimiter.
-	config, err := configify.Environment(configify.Namespace("HELLO"))
-	if err != nil {
-		panic("Aww nuts...")
-	}
+	config := configify.Environment(configify.Namespace("HELLO"))
 
 	// Each value fetch gives you the parsed value as well as an 'ok'
-	// as to whether the value actually existed in the source or not.
+	// whether the value actually existed in the source or not.
 	host, ok := config.String("HOST")
 	fmt.Printf("Host:    [%s] (%v)\n", host, ok)
 
@@ -401,16 +381,13 @@ func ExampleEnvironmentDefaults() {
 	_ = os.Setenv("HELLO_TIMEOUT", "20s")
 
 	// Use that fixed map source as the defaults for the environment source.
-	config, err := configify.Environment(
+	config := configify.Environment(
 		configify.Namespace("HELLO"),
 		configify.Defaults(configify.Values{
 			"PORT": 9999,
 			"FOO":  "foo value",
 			"BAR":  "bar value",
 		}))
-	if err != nil {
-		panic("Aww nuts...")
-	}
 
 	host, ok := config.String("HOST")
 	fmt.Printf("Host:    [%s] (%v)\n", host, ok)

@@ -34,7 +34,7 @@ func main() {
 	// The 'ok' return value indicates whether we found that value in the
 	// source or not. For instance, is "DEBUG_MODE" false because it wasn't
 	// in the environment or did you explicitly set it to "false"?
-	env, ok := configify.Environment()
+	env := configify.Environment()
 	host, ok := env.String("HTTP_HOST")
 	port, ok := env.Uint("HTTP_PORT")
 	debugMode, ok := env.Bool("DEBUG_MODE")
