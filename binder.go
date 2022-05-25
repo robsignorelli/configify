@@ -43,7 +43,7 @@ func (b standardBinder) bindPrefix(out interface{}, prefix string) {
 	b.bindPrefixWithType(out, prefix, outType, outValue)
 }
 
-func (b standardBinder) bindPrefixWithType(out interface{}, prefix string, outType reflect.Type, outValue reflect.Value) {
+func (b standardBinder) bindPrefixWithType(_ interface{}, prefix string, outType reflect.Type, outValue reflect.Value) {
 	for i := 0; i < outType.NumField(); i++ {
 		field := outType.Field(i)
 		value := outValue.Field(i)
@@ -81,9 +81,45 @@ func (b standardBinder) updateValue(field reflect.StructField, value reflect.Val
 		if v, ok := b.Source.Int(key); ok {
 			value.SetInt(int64(v))
 		}
+	case reflect.Int8:
+		if v, ok := b.Source.Int8(key); ok {
+			value.SetInt(int64(v))
+		}
+	case reflect.Int16:
+		if v, ok := b.Source.Int16(key); ok {
+			value.SetInt(int64(v))
+		}
+	case reflect.Int32:
+		if v, ok := b.Source.Int32(key); ok {
+			value.SetInt(int64(v))
+		}
+	case reflect.Int64:
+		if v, ok := b.Source.Int64(key); ok {
+			value.SetInt(v)
+		}
 	case reflect.Uint:
 		if v, ok := b.Source.Uint(key); ok {
 			value.SetUint(uint64(v))
+		}
+	case reflect.Uint8:
+		if v, ok := b.Source.Uint8(key); ok {
+			value.SetUint(uint64(v))
+		}
+	case reflect.Uint16:
+		if v, ok := b.Source.Uint16(key); ok {
+			value.SetUint(uint64(v))
+		}
+	case reflect.Uint32:
+		if v, ok := b.Source.Uint32(key); ok {
+			value.SetUint(uint64(v))
+		}
+	case reflect.Uint64:
+		if v, ok := b.Source.Uint64(key); ok {
+			value.SetUint(v)
+		}
+	case reflect.Float32:
+		if v, ok := b.Source.Float32(key); ok {
+			value.SetFloat(float64(v))
 		}
 	case reflect.Float64:
 		if v, ok := b.Source.Float64(key); ok {

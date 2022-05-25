@@ -35,11 +35,21 @@ type TestStruct struct {
 	IntRenamed int `conf:"some_int"`
 	IntPointer *int
 
+	Int8  int8
+	Int16 int16
+	Int32 int32
+	Int64 int64
+
 	Uint        uint
 	Uint2       uint
 	UintValue   uint
 	UintRenamed uint `conf:"some_uint"`
 	UintPointer *uint
+
+	Uint8  uint8
+	Uint16 uint16
+	Uint32 uint32
+	Uint64 uint64
 
 	Bool        bool
 	BoolPointer *bool
@@ -102,6 +112,16 @@ func (suite BinderSuite) populateTestStruct() TestStruct {
 		UintValue:   uint(13),
 		UintRenamed: uint(14),
 		UintPointer: &uintPointerVal,
+
+		Uint8:  72,
+		Uint16: 1072,
+		Uint32: 1000072,
+		Uint64: 1000000072,
+
+		Int8:  72,
+		Int16: 1072,
+		Int32: 1000072,
+		Int64: 1000000072,
 
 		StringSlice:        []string{"Foo1", "Bar1"},
 		StringSlice2:       []string{"Foo2", "Bar2"},
@@ -190,6 +210,16 @@ func (suite BinderSuite) TestModelBinder_NoDefaults() {
 	suite.Equal(uint(0), input.UintRenamed)
 	suite.Nil(input.UintPointer)
 
+	suite.Equal(int8(0), input.Int8)
+	suite.Equal(int16(0), input.Int16)
+	suite.Equal(int32(0), input.Int32)
+	suite.Equal(int64(0), input.Int64)
+
+	suite.Equal(int8(0), input.Int8)
+	suite.Equal(int16(0), input.Int16)
+	suite.Equal(int32(0), input.Int32)
+	suite.Equal(int64(0), input.Int64)
+
 	suite.Nil(input.StringSlice)
 	suite.Nil(input.StringSlice2)
 	suite.Nil(input.StringSliceRenamed)
@@ -237,6 +267,16 @@ func (suite BinderSuite) TestModelBinder_KeepDefaults() {
 	suite.Equal(uint(13), input.UintValue)
 	suite.Equal(uint(14), input.UintRenamed)
 	suite.Equal(uint(15), *input.UintPointer)
+
+	suite.Equal(uint8(72), input.Uint8)
+	suite.Equal(uint16(1072), input.Uint16)
+	suite.Equal(uint32(1000072), input.Uint32)
+	suite.Equal(uint64(1000000072), input.Uint64)
+
+	suite.Equal(int8(72), input.Int8)
+	suite.Equal(int16(1072), input.Int16)
+	suite.Equal(int32(1000072), input.Int32)
+	suite.Equal(int64(1000000072), input.Int64)
 
 	suite.ElementsMatch([]string{"Foo1", "Bar1"}, input.StringSlice)
 	suite.ElementsMatch([]string{"Foo2", "Bar2"}, input.StringSlice2)
@@ -308,6 +348,16 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 		source.On("Uint", "some_uint").Return(uint(114), true)
 		source.On("Uint", "UINT_POINTER").Return(uint(115), true)
 
+		source.On("Uint8", "UINT8").Return(uint8(120), true)
+		source.On("Uint16", "UINT16").Return(uint16(121), true)
+		source.On("Uint32", "UINT32").Return(uint32(122), true)
+		source.On("Uint64", "UINT64").Return(uint64(123), true)
+
+		source.On("Int8", "INT8").Return(int8(124), true)
+		source.On("Int16", "INT16").Return(int16(125), true)
+		source.On("Int32", "INT32").Return(int32(126), true)
+		source.On("Int64", "INT64").Return(int64(127), true)
+
 		// They defaults on the struct are true, so flip them back to false.
 		source.On("Bool", "BOOL").Return(false, true)
 		source.On("Bool", "BOOL_POINTER").Return(false, true)
@@ -370,6 +420,16 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 	suite.Equal(uint(113), input.UintValue)
 	suite.Equal(uint(114), input.UintRenamed)
 	suite.Equal(uint(115), *input.UintPointer)
+
+	suite.Equal(uint8(120), input.Uint8)
+	suite.Equal(uint16(121), input.Uint16)
+	suite.Equal(uint32(122), input.Uint32)
+	suite.Equal(uint64(123), input.Uint64)
+
+	suite.Equal(int8(124), input.Int8)
+	suite.Equal(int16(125), input.Int16)
+	suite.Equal(int32(126), input.Int32)
+	suite.Equal(int64(127), input.Int64)
 
 	suite.Equal(false, input.Bool)
 	suite.Equal(false, *input.BoolPointer)
