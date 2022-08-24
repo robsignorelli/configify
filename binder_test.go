@@ -54,6 +54,9 @@ type TestStruct struct {
 	Bool        bool
 	BoolPointer *bool
 
+	Float32        float32
+	Float32Pointer *float32
+
 	Float64        float64
 	Float64Pointer *float64
 
@@ -92,6 +95,7 @@ func (suite BinderSuite) populateTestStruct() TestStruct {
 	durationPointerVal := 10 * time.Minute
 	timePointerVal := time.Date(2019, 12, 25, 11, 59, 59, 0, time.UTC)
 	boolPointerVal := true
+	float32PointerVal := float32(1.57)
 	float64PointerVal := 3.14
 
 	value := TestStruct{
@@ -129,6 +133,9 @@ func (suite BinderSuite) populateTestStruct() TestStruct {
 
 		Bool:        true,
 		BoolPointer: &boolPointerVal,
+
+		Float32:        999.888,
+		Float32Pointer: &float32PointerVal,
 
 		Float64:        123.456,
 		Float64Pointer: &float64PointerVal,
@@ -227,6 +234,9 @@ func (suite BinderSuite) TestModelBinder_NoDefaults() {
 	suite.Equal(false, input.Bool)
 	suite.Nil(input.BoolPointer)
 
+	suite.Equal(float32(0), input.Float32)
+	suite.Nil(input.Float32Pointer)
+
 	suite.Equal(float64(0), input.Float64)
 	suite.Nil(input.Float64Pointer)
 
@@ -288,6 +298,9 @@ func (suite BinderSuite) TestModelBinder_KeepDefaults() {
 	suite.Equal(true, input.Bool)
 	suite.Equal(true, *input.BoolPointer)
 
+	suite.Equal(float32(999.888), input.Float32)
+	suite.Equal(float32(1.57), *input.Float32Pointer)
+
 	suite.Equal(123.456, input.Float64)
 	suite.Equal(3.14, *input.Float64Pointer)
 
@@ -324,6 +337,7 @@ func (suite BinderSuite) TestModelBinder_KeepDefaults() {
 // are found within the source. This will also ensure that all of the necessary
 func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 	input := suite.populateTestStruct()
+
 	source := configifytest.NewMockSource(func(source *configifytest.MockSource) {
 		source.On("String", "STRING").Return("New-A", true)
 		source.On("String", "STRING2").Return("New-B", true)
@@ -358,9 +372,12 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 		source.On("Int32", "INT32").Return(int32(126), true)
 		source.On("Int64", "INT64").Return(int64(127), true)
 
-		// They defaults on the struct are true, so flip them back to false.
+		// The defaults on the struct are true, so flip them back to false.
 		source.On("Bool", "BOOL").Return(false, true)
 		source.On("Bool", "BOOL_POINTER").Return(false, true)
+
+		source.On("Float32", "FLOAT32").Return(float32(12345.5), true)
+		source.On("Float32", "FLOAT32_POINTER").Return(float32(8080.90), true)
 
 		source.On("Float64", "FLOAT64").Return(99.123, true)
 		source.On("Float64", "FLOAT64_POINTER").Return(98765.4321, true)
@@ -399,7 +416,6 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 		source.On("Uint", "NESTED_POINTER_INNER_UINT").Return(uint(162), true)
 
 		source.On("String", "NESTED_POINTER_NIL_INNER_STRING").Return("SHOULD STILL BE NIL", true)
-
 	})
 	configify.NewBinder(source).Bind(&input)
 
@@ -433,6 +449,9 @@ func (suite BinderSuite) TestModelBinder_OverrideEverything() {
 
 	suite.Equal(false, input.Bool)
 	suite.Equal(false, *input.BoolPointer)
+
+	suite.Equal(float32(12345.5), input.Float32)
+	suite.Equal(float32(8080.90), *input.Float32Pointer)
 
 	suite.Equal(99.123, input.Float64)
 	suite.Equal(98765.4321, *input.Float64Pointer)
