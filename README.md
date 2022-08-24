@@ -148,3 +148,100 @@ func main() {
 	...	
 }
 ``` 
+
+## Functional Option Support
+
+Configify provides support for multiple common strategies for setting
+up the initial state of some component. In addition to sources
+and binders, you can also configure components using [functional
+option style](https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis)
+
+Typically, you need to define custom option types and copy/paste
+the same `for` loop every time you have a new functionally
+configurable thing.
+
+The `functional` package provides a generic (as in Go 1.18 generic)
+way to cut down on that boilerplate.
+
+```
+import (
+    "time"
+    "github.com/robsignorelli/configify/functional"
+)
+
+type Client struct {
+    Address string
+    Port    uint16
+    Timeout time.Duration
+}
+
+// By returning 'functional.Option' values, you clearly
+// indicate that these functions are meant to be used when
+// configuring new clients. No dedicated type needed.
+
+func WithPort(port uint16) functional.Option[Client] {
+    return func(client *Client) {
+        client.Port = port
+    }
+} 
+
+func WithTimeout(timeout time.Duration) functional.Option[Client] {
+    return func(client *Client) {
+        client.Timeout = timeout
+    }
+}
+
+// When actually configuring new clients, you can replace
+// the for loop that invokes all of your option functions with
+// a single call to 'functional.Apply()'.
+
+func NewClient(address string, options... functional.Option[Client]) Client {
+    client := Client{
+        Address: address,
+        Port:    443,
+        Timeout: 1*time.Minute,
+    }
+    functional.Apply(&client, options...)
+    return client
+}
+
+func setup() {
+    clientA := NewClient("https://go.dev",
+        WithTimeout(5 * time.Second),
+    )
+    clientB := NewClient("https://some-random-api.io",
+        WithPort(9000),
+        WithTimeout(10 * time.Second),
+    )
+    ... do something cool with your clients ...
+}
+```
+
+You might decide that you still prefer a custom option
+type for clarity in your code. That's fine. You can still
+use `functional.Apply()` to run your component through all
+of your functional options.
+
+```
+// Either one works...
+type ClientOption func(*Client)
+type ClientOption functional.Option[Client]
+
+func WithPort(port uint16) ClientOption {
+    ...
+} 
+
+func WithTimeout(timeout time.Duration) ClientOption {
+    ...
+}
+
+func NewClient(address string, options... ClientOption) Client {
+    client := Client{
+        Address: address,
+        Port:    443,
+        Timeout: 1*time.Minute,
+    }
+    functional.Apply(&client, options...)
+    return client
+}
+```

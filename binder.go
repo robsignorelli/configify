@@ -166,6 +166,10 @@ func (b standardBinder) updatePointer(field reflect.StructField, value reflect.V
 		if v, ok := b.Source.Uint(key); ok {
 			value.Set(reflect.ValueOf(&v))
 		}
+	case reflect.Float32:
+		if v, ok := b.Source.Float32(key); ok {
+			value.Set(reflect.ValueOf(&v))
+		}
 	case reflect.Float64:
 		if v, ok := b.Source.Float64(key); ok {
 			value.Set(reflect.ValueOf(&v))
